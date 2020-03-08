@@ -448,7 +448,7 @@ iframe {
       height: 260px; } }
 
 #post__toc-trigger {
-  width: 300px;
+  width: 200px;
   padding-left: 40px;
   position: fixed;
   top: 64px;
@@ -476,7 +476,7 @@ iframe {
       display: none; } }
 
 #post__toc {
-  width: 260px;
+  width: 160px;
   height: 100%;
   padding-top: 30px;
   background: rgba(250, 250, 250, 0.9);
