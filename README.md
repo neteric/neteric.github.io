@@ -1,42 +1,37 @@
-# 3-Jekyll Theme
+### 我的博客
 
-新版 3-Jekyll，当前完成度 80%，预览请访问 [http://peiwen.lu](http://peiwen.lu)，[Github repo](https://github.com/P233/P233.github.io)。
-
-旧版请在 [https://github.com/P233/3-Jekyll/releases](https://github.com/P233/3-Jekyll/releases) 下载。
+地址：[http://liuyanwei.jumppo.com](http://liuyanwei.jumppo.com)
 
 
-## 针对旧版的改进
+### 安装说明
 
-* 侧边栏使用 Tag 或 Category 做为文章分类，默认 Tag。
-* 自动生成侧边栏分类标签，基本不需要修改模板文件。但标签顺序由 Jekyll 根据时间顺序生成，需要手动调整顺序只能修改 `_includes/sidebar.html`，格式是 `<li class="sidebar-tag" data-filter="TAG">TAG</li>`，替换 `TAG`，大小写敏感。
-* 更加全面的 Sass 变量，方便个性化主题样式。
-* 暂定取消文章的标题目录。
-* 取消了嵌入 Codepen。
+1. fork库到自己的github
+2. 修改名字为：`username.github.io`
+3. clone库到本地，参考`_posts`中的目录结构自己创建适合自己的文章目录结构
+4. 修改CNAME，或者删掉这个文件，使用默认域名
+5. 修改`_config.yml`配置项
+6. 修改或删除footer最后的百度站点统计
+7. It's done!
 
+**注意:**
 
-## TODO
+fork程序后如果要保留我的文章，请注明出处。
 
-* 搜索功能
-* Webkit 换页动画
-* 改进文章筛选动画
-* <del>集成 Google Analytics</del>
-* 文章时间，Category，Tag 归档页面
-* Favicon
-* Mobile touch swipe
-
-其他建议欢迎[提交 issue](https://github.com/P233/3-Jekyll/issues/new)
+github博客系统使用的是jekyll搭建的，关于博客详细搭建，可以参考我的文章：[在github上搭建jekyll博客](http://liuyanwei.jumppo.com/2014/02/12/how-to-deploy-a-blog-on-github-by-jekyll.html)
 
 
-## 使用
+### 更新内容
+-   [ x ]  增加文章搜索功能
+-   [ x ]  增加SEO优化和站点地图功能
+-   [ x ]  修改网站最低支持的ie版本，从最低ie9改到最低ie8
+-   [ x ]  添加github连接图标
+-   [   ]  增加分享功能
+-   [   ]  修改网站配色
 
-### 设置 `_config.yml`
+### 其他支持
 
-`_config.yml` 除基本的站点设置外，新加入了社交链接与评论设置。将需要添加的社交帐号填入对应设置，并取消注释，会在头像下方增加一条社交帐号的链接。支持 Twitter, Weibo, Github, Codepen 以及 Dribbble。此外，填入 Disqus 的 shortname 也会启用 Disqus 评论。 `filter` 选项选择使用 `tag` 或 `category` 作为文章分类。
+-jumppo图床网站，基于html5和php
+jekyll博客发布图片时只能外链，所以为了配合这个博客，整了一个简单的图床程序，地址：[https://github.com/coolnameismy/ImagesUploadWebSite](https://github.com/coolnameismy/ImagesUploadWebSite)
 
-### 修改样式
 
-样式相关的 Sass 变量都存储在 `/css/main.sass` 文件中，修改这个文件可以满足大部分样式定制的需求。建议首先修改 `$gradient-start` 与 `$gradient-end` 两个变量，给自己的博客使用独一无二的侧边栏背景。
 
-### 替换图片
-
-请不要忘记替换 `/assets/img/` 内的图片。`avatar.jpg` 是侧边栏头像的图片，`qrcode.jpg` 会在提示浏览器不兼容时使用。[QR Code 生成器](https://www.unitag.io/qrcode)
