@@ -23,10 +23,610 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
         
-        <lastBuildDate>Thu, 18 Aug 2022 22:55:25 &#43;0800</lastBuildDate>
+        <lastBuildDate>Thu, 18 Aug 2022 23:15:59 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://neteric.github.io/rss.xml" />
         
+        
+            <item>
+                <title>存储引擎对比</title>
+                <link>https://neteric.github.io/posts/storage-engine-compare/</link>
+                <guid isPermaLink="true">https://neteric.github.io/posts/storage-engine-compare/</guid>
+                <pubDate>Thu, 18 Aug 2022 16:10:03 &#43;0800</pubDate>
+                
+                    <author>neteric@126.com (neteric)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
+                
+                    <description>&lt;h2 id=&#34;一前置知识&#34;&gt;一、前置知识&lt;/h2&gt;
+&lt;h3 id=&#34;1-硬盘结构&#34;&gt;1. 硬盘结构&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;http://info.mrtlab.com/picdoc/Hard-disk-structure.html&#34;&gt;http://info.mrtlab.com/picdoc/Hard-disk-structure.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E5%86%99%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9A,%E6%98%AF%E4%B8%8D%E4%BC%9A%E6%94%B9%E5%8F%98%E7%9A%84%E3%80%82&#34;&gt;https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E5%86%99%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9A,%E6%98%AF%E4%B8%8D%E4%BC%9A%E6%94%B9%E5%8F%98%E7%9A%84%E3%80%82&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;结论：顺序写速度远远大于随机写&lt;/p&gt;
+&lt;h3 id=&#34;2-linux-io流程&#34;&gt;2. Linux IO流程&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/Linux-storage-stack-diagram_v4.10.png&#34; alt=&#34;Linux Storage Stack Diagram - Thomas-Krenn-Wiki&#34;&gt;&lt;/p&gt;
+&lt;p&gt;结论： 一次硬盘读取IO路径非常长，要经历多次上下文切换&lt;/p&gt;
+&lt;h3 id=&#34;3-存储分类&#34;&gt;3. 存储分类&lt;/h3&gt;
+&lt;h4 id=&#34;结构化数据&#34;&gt;结构化数据&lt;/h4&gt;
+&lt;p&gt;可以从名称中看出，是高度组织和整齐格式化的数据。结构化数据可以轻易放入表格和电子表格中的数据类型，典型的比如使用关系型数据库表示和存储，表现为二维形式的数据。一般特点是：数据以行为单位，一行数据表示一个实体的信息，每一行数据的属性是相同的&lt;/p&gt;
+&lt;h5 id=&#34;结构化数据的存储&#34;&gt;结构化数据的存储&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;关系型数据库：如 MySQL、PostreSQL、Oracle、SQLServer， 其组成一般包括： 连接器，解析器，优化器，执行器，&lt;strong&gt;存储引擎&lt;/strong&gt;， 管理硬盘的单机文件系统&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;半结构化数据&#34;&gt;半结构化数据&lt;/h4&gt;
+&lt;p&gt;半结构化数据是结构化数据的一种形式，它并不符合关系型数据库或其他数据表的形式关联起来的数据模型结构，但包含相关标记，用来分隔语义元素以及对记录和字段进行分层。因此，它也被称为自描述的结构。常见的半结构数据格式有XML、JSON、Yaml&lt;/p&gt;
+&lt;h5 id=&#34;半结构化数据的存储&#34;&gt;半结构化数据的存储&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;K/V存储：Rocksdb、LevelDB、BlotDB 其组成一般包括：连接器，优化器，&lt;strong&gt;存储引擎&lt;/strong&gt;，单机文件系统&lt;/li&gt;
+&lt;li&gt;文档存储： MongoDB、ElasticSearch&lt;/li&gt;
+&lt;li&gt;列式存储（也叫表格存储）： ClickHouse、Apache Druid 、Hbase&lt;/li&gt;
+&lt;li&gt;内存K/V存储： Redis、Memcache&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;非结构化数据&#34;&gt;非结构化数据&lt;/h4&gt;
+&lt;p&gt;数据结构不规则或不完整，没有预定义的数据模型，不方便用数据库二维逻辑表来表现的数据。本质上是结构化数据之外的一切数据，如：全文文本、图片、音频、影视、超媒体等信息&lt;/p&gt;
+&lt;h5 id=&#34;非结构化数据的存储&#34;&gt;非结构化数据的存储&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;单机文件系统： 如 ext2/3/4, xfs, btrfs, bluefs,ntfs, fat32&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;分布式块/对象/文件存储：如 ceph, hdfs, glusterfs, MinIO，这类非结构化数据的存储又叫Blob存储，其组成部分一般都包括：管理硬盘的单机文件系统 ，分布式特性的实现（分片，复制，一致性），元数据管理系统（元数据一般都是半结构化数据），接口实现（块，对象，文件）&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;https://duodian.feishu.cn/file/boxcnPObkzRjzgF1mfrwJnzbMPc&#34;&gt;https://duodian.feishu.cn/file/boxcnPObkzRjzgF1mfrwJnzbMPc&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;4-存储使用场景&#34;&gt;4. 存储使用场景&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;OLTP&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OLAP&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;th&gt;OLTP&lt;/th&gt;
+&lt;th&gt;OLAP&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;主要读取模式&lt;/td&gt;
+&lt;td&gt;小数据量的随机读，通过 key 查询&lt;/td&gt;
+&lt;td&gt;大数据量的聚合（max,min,sum, avg）查询&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;主要写入模式&lt;/td&gt;
+&lt;td&gt;随机访问，低延迟写入&lt;/td&gt;
+&lt;td&gt;批量导入（ETL）或者流式写入&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;主要应用场景&lt;/td&gt;
+&lt;td&gt;通过 web 方式使用的最终用户&lt;/td&gt;
+&lt;td&gt;互联网分析，为了辅助决策&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;如何看待数据&lt;/td&gt;
+&lt;td&gt;当前时间点的最新状态&lt;/td&gt;
+&lt;td&gt;随着时间推移的&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数据量&lt;/td&gt;
+&lt;td&gt;单次查询和总体都相对较小，总体通常 GB 到 TB&lt;/td&gt;
+&lt;td&gt;单次查询和总体都相对巨大，总体通常 TB 到 PB&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;请求数量&lt;/td&gt;
+&lt;td&gt;相对频繁，侧重在线交易&lt;/td&gt;
+&lt;td&gt;相对较少，侧重离线分析&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;瓶颈&lt;/td&gt;
+&lt;td&gt;Disk Seek&lt;/td&gt;
+&lt;td&gt;Disk Bandwidth&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;存储格式&lt;/td&gt;
+&lt;td&gt;多用行存&lt;/td&gt;
+&lt;td&gt;列存逐渐流行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;用户&lt;/td&gt;
+&lt;td&gt;比较普遍，一般应用用的比较多&lt;/td&gt;
+&lt;td&gt;多为商业用户&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;场景举例&lt;/td&gt;
+&lt;td&gt;银行交易&lt;/td&gt;
+&lt;td&gt;商业分析&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;产品举例&lt;/td&gt;
+&lt;td&gt;MySQL&lt;/td&gt;
+&lt;td&gt;ClickHouse&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;二lsm-tree的起源&#34;&gt;二、LSM Tree的起源&lt;/h2&gt;
+&lt;h3 id=&#34;1-世界上最简单的数据库&#34;&gt;1. 世界上最简单的数据库&lt;/h3&gt;
+&lt;p&gt;首先来看，世界上“最简单”的数据库，由两个 Bash 函数构成：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;db_set &lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$2&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; database
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;db_get &lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	grep &lt;span class=&#34;s2&#34;&gt;&amp;#34;^&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,&amp;#34;&lt;/span&gt; database &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; sed -e &lt;span class=&#34;s2&#34;&gt;&amp;#34;s/^&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,//&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; tail -n &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这两个函数实现了一个基于字符串的 KV 存储（只支持 get/set，不支持 delete）：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ db_set &lt;span class=&#34;m&#34;&gt;123456&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;{&amp;#34;name&amp;#34;:&amp;#34;London&amp;#34;,&amp;#34;attractions&amp;#34;:[&amp;#34;BigBen&amp;#34;,&amp;#34;LondonEye&amp;#34;]}&amp;#39;&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ db_set &lt;span class=&#34;m&#34;&gt;42&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;{&amp;#34;name&amp;#34;:&amp;#34;SanFrancisco&amp;#34;,&amp;#34;attractions&amp;#34;:[&amp;#34;GoldenGateBridge&amp;#34;]}&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ db_get &lt;span class=&#34;m&#34;&gt;42&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;:&lt;span class=&#34;s2&#34;&gt;&amp;#34;San Francisco&amp;#34;&lt;/span&gt;,&lt;span class=&#34;s2&#34;&gt;&amp;#34;attractions&amp;#34;&lt;/span&gt;:&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Golden Gate Bridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;来分析下它为什么 work，也反映了日志结构存储的最基本原理：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;set：在文件末尾追加一个 KV 对。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;get：匹配所有 Key，返回最后（也即最新）一条 KV 对中的 Value&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;更新操作： 使用set在文件末尾追加一条该key的新记录&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;删除操作： 使用set在文件末尾追加一条该key的墓碑记录，当查询到墓碑记录代表这个key已删除&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;2-引入哈希索引&#34;&gt;2. 引入哈希索引&lt;/h3&gt;
+&lt;p&gt;可以看出，上述“世界上最简单的数据库”写入的速度非常快，几乎是数据库能做到的极限。但是读需要全文逐行扫描，会慢很多，如果数据量达到百GB级别，该数据库的读变得几乎不可用，为了加快读，我们需要构建&lt;strong&gt;索引&lt;/strong&gt;（一种允许基于某些字段查找的额外数据结构）&lt;/p&gt;
+&lt;p&gt;索引从原数据中构建，只为加快查找。因此索引会耗费一定额外空间，和插入时间（每次插入要更新索引），即，重新以空间和写换读取。&lt;/p&gt;
+&lt;p&gt;依上小节的例子，所有数据顺序追加到磁盘上。为了加快查询，我们在内存中构建一个哈希索引：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Key 是查询 Key&lt;/li&gt;
+&lt;li&gt;Value 是 KV 条目的起始位置和长度。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig01.png&#34; alt=&#34;ddia-3-1-hash-map-csv.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;看起来很简单，但这正是 &lt;a href=&#34;https://docs.riak.com/riak/kv/2.2.3/setup/planning/backend/bitcask/index.html&#34; title=&#34;Bitcask&#34;&gt;Bitcask&lt;/a&gt; 的基本设计，关键是他能很好的 Work（在小数据量时，即所有 key 都能存到内存中时）能提供很高的读写性能&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;写：文件追加写。&lt;/li&gt;
+&lt;li&gt;读：一次内存查询，一次磁盘 seek；如果数据已经被缓存，则 seek 也可以省掉。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果你的 key 集合很小（意味着能全放内存），但是每个 key 更新很频繁，那么 Bitcask 便是你的菜。举个栗子：频繁更新的视频播放量，key 是视频 url，value 是视频播放量&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;但有个很重要问题，单个文件越来越大，磁盘空间不够怎么办？&lt;/p&gt;
+&lt;p&gt;在文件到达一定尺寸后，就新建一个文件，将原文件变为只读。同时为了回收多个 key 多次写入的造成的空间浪费，可以将只读文件进行紧缩（ compact ），将旧文件进行重写，挤出“水分”（被覆写的数据）以进行垃圾回收。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig03.png&#34; alt=&#34;ddia-3-3-compaction-sim.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当然，如果我们想让其&lt;strong&gt;工业可用&lt;/strong&gt;，还有很多问题需要解决：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;文件格式&lt;/strong&gt;。对于&lt;strong&gt;日志&lt;/strong&gt;来说，CSV 不是一种紧凑的数据格式，有很多空间浪费。比如，可以用 length + record bytes 。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;记录删除&lt;/strong&gt;。之前只支持 put\get，但实际还需要支持 delete。但日志结构又不支持更新，怎么办呢？一般是写一个特殊标记（比如墓碑记录，tombstone）以表示该记录已删除。之后 compact 时真正删除即可。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;宕机恢复&lt;/strong&gt;。在机器重启时，内存中的哈希索引将会丢失。当然，可以全盘扫描以重建，但通常一个小优化是，对于每个 segment file， 将其索引条目和数据文件一块持久化，重启时只需加载索引条目即可。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;记录写坏、少写&lt;/strong&gt;。系统任何时候都有可能宕机，由此会造成记录写坏、少写。为了识别错误记录，我们需要增加一些校验字段，以识别并跳过这种数据。为了跳过写了部分的数据，还要用一些特殊字符来标识记录间的边界。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;并发控制&lt;/strong&gt;。由于只有一个活动（追加）文件，因此写只有一个天然并发度。但其他的文件都是不可变的（compact 时会读取然后生成新的），因此读取和紧缩可以并发执行。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;乍一看，基于日志的存储结构存在着不少浪费：需要追加进行更新和删除。但日志结构有几个原地更新结构无法做的优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;以顺序写代替随机写&lt;/strong&gt;。对于磁盘和 SSD，顺序写都要比随机写快几个数量级。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;简易的并发控制&lt;/strong&gt;。由于大部分的文件都是**不可变（immutable）**的，因此更容易做并发读取和紧缩。也不用担心原地更新会造成新老数据交替。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;更少的内部碎片&lt;/strong&gt;。每次紧缩会将垃圾完全挤出。但是原地更新就会在 page 中留下一些不可用空间&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;3-sstable&#34;&gt;3. SSTable&lt;/h3&gt;
+&lt;p&gt;上一节讲的基于内存的哈希索引也有其局限：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;所有 Key 必须放内存&lt;/strong&gt;：一旦 Key 的数据量超过内存大小，这种方案便不再 work。当然你可以设计基于磁盘的哈希表，但那又会带来大量的随机写&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不支持范围查询&lt;/strong&gt;：由于 key 是无序的，不能简单的支持扫描kitty001到kitty999区间内的所有key，只能采用逐个查找的方式查询每个key&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;compact效率低&lt;/strong&gt;：日志文件compact需要遍历文件内容，效率低下&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其中外存上的数据是简单追加写而形成的，并没有按照某个字段有序。假设加一个限制，让这些文件按 key 有序。我们称这种格式为：SSTable（Sorted String Table）。&lt;/p&gt;
+&lt;p&gt;这种文件格式有什么优点呢？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;高效的数据文件合并&lt;/strong&gt;。即有序文件的归并外排，顺序读，顺序写&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig04.png&#34; alt=&#34;ddia-3-4-merge-sst.png&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;不需要在内存中保存所有数据的索引&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;仅需要记录下每个文件界限（以区间表示：[startKey, endKey]，当然实际会记录的更细）即可。查找某个 Key 时，去所有包含该 Key 的区间对应的文件二分查找即可（也即是&lt;strong&gt;稀疏索引&lt;/strong&gt;）在文件中查找特定的key时，不再需要在内存中保存所有键的索引。 如下图假设正在查找handiwork ，且不知道该键在段文件中的确切偏移。但是，如果知道handbag 和handsome 的偏移 ，考虑到根据键排序，则键handiwork一定位于它们两者之间。这意味着可以跳到handbag 的偏移，从那里开始扫描，直到找到hαndiwork,如果找到handsome都还没找到则可以断定这个文件中没有handiwork这个key的记录&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://s2.loli.net/2022/04/16/j8tM6IUk1QrJXuw.png&#34; alt=&#34;ddia-3-5-sst-index.png&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;分块压缩，节省空间，减少 IO&lt;/strong&gt;。相邻 Key 共享前缀，既然每次都要批量取，那正好一组 key batch 到一块，称为 block，且只记录 block 的索引。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;构建和维护-sstables&#34;&gt;构建和维护 SSTables&lt;/h4&gt;
+&lt;p&gt;SSTables 格式听起来很美好，但须知数据是乱序的来的，我们如何得到有序的数据文件呢？&lt;/p&gt;
+&lt;p&gt;这可以拆解为两个小问题：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;构建 SSTable 文件&lt;/strong&gt;。将乱序数据在外存（磁盘 or SSD）中上整理为有序文件，是比较难的。但是在内存就方便的多。于是一个大胆的想法就形成了：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在内存中维护一个有序结构（称为 &lt;strong&gt;MemTable&lt;/strong&gt;）。红黑树、AVL 树、跳表。&lt;/li&gt;
+&lt;li&gt;到达一定阈值之后全量 dump 到外存。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;维护 SSTable 文件&lt;/strong&gt;。为什么需要维护呢？首先要问，对于上述复合结构，我们怎么进行查询：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先去 MemTable 中查找，如果命中则返回。&lt;/li&gt;
+&lt;li&gt;再去 SSTable 按时间顺序由新到旧逐一查找。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果 SSTable 文件越来越多，则查找代价会越来越大。因此需要将多个 SSTable 文件合并，以减少文件数量，同时进行 GC，我们称之为&lt;strong&gt;紧缩&lt;/strong&gt;（ Compaction）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;该方案的问题&lt;/strong&gt;：如果出现宕机，内存中的数据结构将会消失。 解决方法也很经典：WAL。&lt;/p&gt;
+&lt;h3 id=&#34;4-从-sstables-到-lsm-tree&#34;&gt;4. 从 SSTables 到 LSM-Tree&lt;/h3&gt;
+&lt;p&gt;将前面几节的一些碎片有机的组织起来，便是时下流行的存储引擎 LevelDB 和 RocksDB 后面的存储结构：LSM-Tree&lt;/p&gt;
+&lt;p&gt;这种数据结构是 Patrick O’Neil 等人，在 1996 年提出的：&lt;a href=&#34;https://www.cs.umb.edu/~poneil/lsmtree.pdf&#34; title=&#34;The Log-Structured Merge-Tree&#34;&gt;The Log-Structured Merge-Tree&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;Elasticsearch 和 Solr 的索引引擎 Lucene，也使用类似 LSM-Tree 存储结构。但其数据模型不是 KV，但类似：word → document list。&lt;/p&gt;
+&lt;h5 id=&#34;lsm-tree的性能优化&#34;&gt;LSM-Tree的性能优化&lt;/h5&gt;
+&lt;p&gt;如果想让一个引擎工程上可用，还会做大量的性能优化。对于 LSM-Tree 来说，包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;**优化 SSTable 的查找。**常用 &lt;a href=&#34;https://www.qtmuniao.com/2020/11/18/leveldb-data-structures-bloom-filter/&#34;&gt;&lt;strong&gt;Bloom Filter&lt;/strong&gt;&lt;/a&gt;。该数据结构可以使用较少的内存为每个 SSTable 做一些指纹，起到一些初筛的作用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;层级化组织 SSTable&lt;/strong&gt;。以控制 Compaction 的顺序和时间。常见的有 size-tiered 和 leveled compaction。LevelDB 便是支持后者而得名。前者比较简单粗暴，后者性能更好，也因此更为常见。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-sized-tiered.png&#34; alt=&#34;ddia-sized-tierd-compact.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;对于 RocksDB 来说，工程上的优化和使用上的优化就更多了。在其 &lt;a href=&#34;https://github.com/facebook/rocksdb/wiki&#34; title=&#34;rocksdb wiki&#34;&gt;Wiki&lt;/a&gt; 上随便摘录几点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Column Family&lt;/li&gt;
+&lt;li&gt;前缀压缩和过滤&lt;/li&gt;
+&lt;li&gt;键值分离，BlobDB&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;但无论有多少变种和优化，LSM-Tree 的核心思想——&lt;strong&gt;保存一组合理组织、后台合并的 SSTables&lt;/strong&gt; ——简约而强大。可以方便的进行范围遍历，可以变大量随机为少量顺序。&lt;/p&gt;
+&lt;h2 id=&#34;三另一个世界-b-族树&#34;&gt;三、另一个世界-B 族树&lt;/h2&gt;
+&lt;p&gt;虽然先讲的 LSM-Tree，但是它要比 B+ 树新的多。B 树于 1970 年被 R. Bayer and E. McCreight &lt;a href=&#34;https://dl.acm.org/doi/10.1145/1734663.1734671&#34; title=&#34;b tree paper&#34;&gt;提出&lt;/a&gt;后，便迅速流行了起来。现在几乎所有的关系型数据中，它都是数据索引标准一般的实现。与 LSM-Tree 一样，它也支持高效的&lt;strong&gt;点查&lt;/strong&gt;和&lt;strong&gt;范围查&lt;/strong&gt;。但却使用了完全不同的组织方式&lt;/p&gt;
+&lt;h3 id=&#34;1-起源-顺序存储的scheme&#34;&gt;1. 起源-顺序存储的Scheme&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/fig98.png&#34; alt=&#34;image-20220817200550307&#34;&gt;&lt;/p&gt;
+&lt;p&gt;B+树的发展过程其实是面向硬盘特性编程的思考过程，硬盘顺序写很快，但顺序写入过后要查找和更新就相对比较慢了，在计算机科学中，用于加快查找的数据结构自然就是树，那能不能把二维表数据以树的形式在硬盘上组织呢？&lt;/p&gt;
+&lt;h3 id=&#34;2-二叉查找树&#34;&gt;2. 二叉查找树&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/fig99.png&#34; alt=&#34;5fLd8bp0nu&#34;&gt;&lt;/p&gt;
+&lt;p&gt;从图中可以看到，我们为 product 表(产品库存表)建立了一个二叉查找树的索引。&lt;/p&gt;
+&lt;p&gt;二叉查找树的特点就是任何节点的左子节点的键值都小于当前节点的键值，右子节点的键值都大于当前节点的键值。顶端的节点我们称为根节点，没有子节点的节点我们称之为叶节点。&lt;/p&gt;
+&lt;p&gt;如果我们需要查找 id=5 的产品信息，利用我们创建的二叉查找树索引，查找流程如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将根节点作为当前节点，把 5与当前节点的键值 4比较，5大于 4，接下来我们把当前节点&amp;gt;的右子节点作为当前节点。&lt;/li&gt;
+&lt;li&gt;继续把 5和当前节点的键值 6 比较，发现 5小于 6，把当前节点的左子节点作为当前节点。&lt;/li&gt;
+&lt;li&gt;把 5 和当前节点的键值 5对比，5等于 5，满足条件，我们从当前节点中取出 data，即 id=5，name=book, num=899。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;利用二叉查找树我们只需要 3 次即可找到匹配的数据。如果在表中一条条的查找的话，我们需要 5次才能找到&lt;/p&gt;
+&lt;h3 id=&#34;3-平衡二叉查找树&#34;&gt;3. 平衡二叉查找树&lt;/h3&gt;
+&lt;p&gt;上面我们讲解了利用二叉查找树可以快速的找到数据。但是，如果上面的二叉查找树是这样的构造：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/fig100.png&#34; alt=&#34;image-20220817202250598&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这个时候可以看到我们的二叉查找树变成了一个链表。如果我们需要查找 id=7 的产品信息，我们需要查找 7 次，也就相当于全表扫描了。导致这个现象的原因其实是二叉查找树变得不平衡了，也就是高度太高了，从而导致查找效率的不稳定，为了解决这个问题，我们需要保证二叉查找树一直保持平衡，就需要用到平衡二叉树了。&lt;/p&gt;
+&lt;p&gt;平衡二叉树又称 AVL 树，在满足二叉查找树特性的基础上，要求每个节点的左右子树的高度差不能超过 1。&lt;/p&gt;
+&lt;p&gt;下面是平衡二叉树和非平衡二叉树的对比：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/fig101.png&#34; alt=&#34;image-20220817203243292&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由平衡二叉树的构造我们可以发现第一张图中的二叉树其实就是一棵平衡二叉树。&lt;/p&gt;
+&lt;p&gt;平衡二叉树保证了树的构造是平衡的，当我们插入或删除数据导致不满足平衡二叉树不平衡时，平衡二叉树会进行调整树上的节点来保持平衡。具体的调整方式这里就不介绍了。平衡二叉树相比于二叉查找树来说，查找效率更稳定，总体的查找速度也更快。&lt;/p&gt;
+&lt;p&gt;除了平衡二叉查找树，还有很多自平衡的二叉树，比如红黑树，它也是通过一些约束条件来达到自平衡，不过红黑树的约束条件比较复杂，不是本篇的重点，大家可以看《数据结构》相关的书籍来了解红黑树的约束条件。&lt;/p&gt;
+&lt;h3 id=&#34;4-b-树&#34;&gt;4. B 树&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;不管平衡二叉查找树还是红黑树，都会随着插入的元素增多，而导致树的高度变高，这就意味着磁盘 I/O 操作次数多，会影响整体数据查询的效率&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;比如，下面这个平衡二叉查找树的高度为 5，那么在访问最底部的节点时，就需要磁盘 5 次 I/O 操作。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://img-blog.csdnimg.cn/img_convert/2d26d30c953cd47c6ab637ad0eba2f99.png&#34; alt=&#34;图片&#34;&gt;&lt;/p&gt;
+&lt;p&gt;根本原因是因为它们都是二叉树，也就是每个节点只能保存 2 个子节点 ，如果我们把二叉树改成 M 叉树（M&amp;gt;2）呢？&lt;/p&gt;
+&lt;p&gt;比如，当 M=3 时，在同样的节点个数情况下，三叉树比二叉树的树要矮&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://img-blog.csdnimg.cn/img_convert/00fb73de7014a87958f1597345e9ef2f.png&#34; alt=&#34;图片&#34;&gt;&lt;/p&gt;
+&lt;p&gt;因此，&lt;strong&gt;当树的节点越多的时候，并且树的分叉数 M 越大的时候，M 叉树的高度会远小于二叉树的高度&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;自平衡二叉树虽然能保持查询操作的时间复杂度在O(logn)，但是因为它本质上是一个二叉树，每个节点只能有 2 个子节点，那么当节点个数越多的时候，树的高度也会相应变高，这样就会增加磁盘的 I/O 次数，从而影响数据查询的效率。为了解决降低树的高度的问题，后面就出来了 B 树，它不再限制一个节点就只能有 2 个子节点，而是允许 M 个子节点 (M&amp;gt;2)，从而降低树的高度。B 树的每一个节点最多可以包括 M 个子节点，M 称为 B 树的阶，所以 B 树就是一个多叉树。&lt;/p&gt;
+&lt;h3 id=&#34;5-b-树&#34;&gt;5. B+ 树&lt;/h3&gt;
+&lt;p&gt;B+ 树就是对 B 树做了一个升级，MySQL 中索引的数据结构就是采用了 B+ 树，B+ 树结构如下图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://img-blog.csdnimg.cn/img_convert/b6678c667053a356f46fc5691d2f5878.png&#34; alt=&#34;图片&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其特点有：&lt;/p&gt;
+&lt;p&gt;B+ 树与 B 树差异的点，主要是以下这几点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;叶子节点（最底部的节点）才会存放实际数据（索引+记录），非叶子节点只会存放索引；&lt;/li&gt;
+&lt;li&gt;所有索引都会在叶子节点出现，叶子节点之间构成一个有序链表；&lt;/li&gt;
+&lt;li&gt;非叶子节点的索引也会同时存在在子节点中，并且是在子节点中所有索引的最大（或最小）。&lt;/li&gt;
+&lt;li&gt;非叶子节点中有多少个子节点，就有多少个索引；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig06.png&#34; alt=&#34;ddia-3-6-b-tree-lookup.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;查找&lt;/strong&gt;。从根节点出发，进行二分查找，然后加载新的页到内存中，继续二分，直到命中或者到叶子节点。 查找复杂度，树的高度—— O(lgn)，影响树高度的因素：分支因子（分叉数，通常是几百个）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig07.png&#34; alt=&#34;ddia-3-7-b-tree-grow-by-split.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;插入 or 更新&lt;/strong&gt;。和查找过程一样，定位到原 Key 所在页，插入或者更新后，将页完整写回。如果页剩余空间不够，则分裂后写入。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;分裂 or 合并&lt;/strong&gt;。级联分裂和合并。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;一个记录大于一个 page 怎么办？&lt;/p&gt;
+&lt;p&gt;树的节点是逻辑概念，page or block 是物理概念。一个逻辑节点可以对应多个物理 page。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;6-b树优化&#34;&gt;6. B+树优化&lt;/h3&gt;
+&lt;p&gt;B+树不像 LSM-Tree ，会在原地修改数据文件。&lt;/p&gt;
+&lt;p&gt;在树结构调整时，可能会级联修改很多 Page。比如叶子节点分裂后，就需要写入两个新的叶子节点，和一个父节点（更新叶子指针）。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;增加预写日志（WAL），将所有修改操作记录下来，预防宕机时中断树结构调整而产生的混乱现场。&lt;/li&gt;
+&lt;li&gt;使用 latch 对树结构进行并发控制。&lt;/li&gt;
+&lt;li&gt;不使用 WAL，而在写入时利用 Copy On Write 技术。同时，也方便了并发控制。如 LMDB、BoltDB。&lt;/li&gt;
+&lt;li&gt;对中间节点的 Key 做压缩，保留足够的路由信息即可。以此，可以节省空间，增大分支因子。&lt;/li&gt;
+&lt;li&gt;为了优化范围查询，有的 B 族树将叶子节点存储时物理连续。但当数据不断插入时，维护此有序性的代价非常大。&lt;/li&gt;
+&lt;li&gt;为叶子节点增加兄弟指针，以避免顺序遍历时的回溯。即 B+ 树的做法，但远不局限于 B+ 树。&lt;/li&gt;
+&lt;li&gt;B 树的变种，分形树，从 LSM-tree 借鉴了一些思想以优化 seek。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;五b-trees-和-lsm-trees-对比&#34;&gt;五、B-Trees 和 LSM-Trees 对比&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;存储引擎&lt;/th&gt;
+&lt;th&gt;B-Tree&lt;/th&gt;
+&lt;th&gt;LSM-Tree&lt;/th&gt;
+&lt;th&gt;备注&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;优势&lt;/td&gt;
+&lt;td&gt;读取更快&lt;/td&gt;
+&lt;td&gt;写入更快&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;写放大&lt;/td&gt;
+&lt;td&gt;1. 数据和 WAL&lt;br/&gt;2. 更改数据时多次覆盖整个 Page&lt;/td&gt;
+&lt;td&gt;1. 数据和 WAL&lt;br/&gt;2. Compaction&lt;/td&gt;
+&lt;td&gt;SSD 不能过多擦除。因此 SSD 内部的固件中也多用日志结构来减少随机小写。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;写吞吐&lt;/td&gt;
+&lt;td&gt;相对较低：&lt;br/&gt;1. 大量随机写。&lt;/td&gt;
+&lt;td&gt;相对较高：&lt;br/&gt;1. 较低的写放大（取决于数据和配置）&lt;br/&gt;2. 顺序写入。&lt;br/&gt;3. 更为紧凑。&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;压缩率&lt;/td&gt;
+&lt;td&gt;1. 存在较多内部碎片。&lt;/td&gt;
+&lt;td&gt;1. 更加紧凑，没有内部碎片。&lt;br/&gt;2. 压缩潜力更大（共享前缀）。&lt;/td&gt;
+&lt;td&gt;但紧缩不及时会造成 LSM-Tree 存在很多垃圾&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;后台流量&lt;/td&gt;
+&lt;td&gt;1. 更稳定可预测，不会受后台 compaction 突发流量影响。&lt;/td&gt;
+&lt;td&gt;1. 写吞吐过高，compaction 跟不上，会进一步加重读放大。&lt;br/&gt;2. 由于外存总带宽有限，compaction 会影响读写吞吐。&lt;br/&gt;3. 随着数据越来越多，compaction 对正常写影响越来越大。&lt;/td&gt;
+&lt;td&gt;RocksDB 写入太过快会引起 write stall，即限制写入，以期尽快 compaction 将数据下沉。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;存储放大&lt;/td&gt;
+&lt;td&gt;1. 有些 Page 没有用满&lt;/td&gt;
+&lt;td&gt;1. 同一个 Key 存多遍&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;并发控制&lt;/td&gt;
+&lt;td&gt;1. 同一个 Key 只存在一个地方&lt;br/&gt;2. 树结构容易加范围锁。&lt;/td&gt;
+&lt;td&gt;同一个 Key 会存多遍，一般使用 MVCC 进行控制。&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;六存储引擎的其他应用&#34;&gt;六、存储引擎的其他应用&lt;/h2&gt;
+&lt;h3 id=&#34;1-全文索引和模糊索引full-text-search-and-fuzzy-indexes&#34;&gt;1. &lt;strong&gt;全文索引和模糊索引（Full-text search and fuzzy indexes）&lt;/strong&gt;。&lt;/h3&gt;
+&lt;p&gt;前述索引只提供全字段的精确匹配，而不提供类似搜索引擎的功能。比如，按字符串中包含的单词查询，针对笔误的单词查询。&lt;/p&gt;
+&lt;p&gt;在工程中常用 &lt;a href=&#34;https://lucene.apache.org/&#34; title=&#34;Apace Lucene&#34;&gt;Apace Lucene&lt;/a&gt; 库，和其包装出来的服务：&lt;a href=&#34;https://www.elastic.co/cn/&#34; title=&#34;Elasticsearch&#34;&gt;Elasticsearch&lt;/a&gt;。他也使用类似 LSM-tree 的日志存储结构，但其索引是一个有限状态自动机，在行为上类似 Trie 树。&lt;/p&gt;
+&lt;h3 id=&#34;2-全内存数据结构&#34;&gt;2. 全内存数据结构&lt;/h3&gt;
+&lt;p&gt;随着单位内存成本下降，甚至支持持久化（*non-volatile memory，*NVM，如 Intel 的 &lt;a href=&#34;https://www.intel.cn/content/www/cn/zh/products/details/memory-storage/optane-dc-persistent-memory.html&#34; title=&#34;傲腾&#34;&gt;傲腾&lt;/a&gt;），全内存数据库也逐渐开始流行。&lt;/p&gt;
+&lt;p&gt;根据是否需要持久化，内存数据大概可以分为两类：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;不需要持久化&lt;/strong&gt;。如只用于缓存的 Memcached。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;需要持久化&lt;/strong&gt;。通过 WAL、定期 snapshot、远程备份等等来对数据进行持久化。但使用内存处理全部读写，因此仍是内存数据库。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;VoltDB, MemSQL, and Oracle TimesTen 是提供关系模型的内存数据库。RAMCloud 是提供持久化保证的 KV 数据库。Redis and Couchbase 仅提供弱持久化保证。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;内存数据库存在优势的原因不仅在于不需要读取磁盘，而在更于不需要对数据结构进行&lt;strong&gt;序列化、编码&lt;/strong&gt;后以适应磁盘所带来的&lt;strong&gt;额外开销&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;当然，内存数据库还有以下优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;提供更丰富的数据抽象&lt;/strong&gt;。如 set 和 queue 这种只存在于内存中的数据抽象。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;实现相对简单&lt;/strong&gt;。因为所有数据都在内存中。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;此外，内存数据库还可以通过类似操作系统 swap 的方式，提供比物理机内存更大的存储空间，但由于其有更多数据库相关信息，可以将换入换出的粒度做的更细、性能做的更好。&lt;/p&gt;
+&lt;p&gt;基于&lt;strong&gt;非易失性存储器&lt;/strong&gt;（non-volatile memory，NVM） 的存储引擎也是这些年研究的一个热点。&lt;/p&gt;
+&lt;h3 id=&#34;3-列存&#34;&gt;3. 列存&lt;/h3&gt;
+&lt;p&gt;前一小节提到的&lt;strong&gt;分维度表&lt;/strong&gt;和&lt;strong&gt;事实表&lt;/strong&gt;，对于后者来说，有可能达到数十亿行和数 PB 大。虽然事实表可能通常有几十上百列，但是单次查询通常只关注其中几个维度（列）。&lt;/p&gt;
+&lt;p&gt;如查询&lt;strong&gt;人们是否更倾向于在一周的某一天购买新鲜水果或糖果&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;weekday&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_product&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;category&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SUM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fact_sales&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;quantity&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;quantity_sold&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fact_sales&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;JOIN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;ON&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fact_sales&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;date_key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;date_key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;JOIN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_product&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;ON&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fact_sales&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_sk&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_product&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_sk&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;year&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2013&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AND&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_product&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;category&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;IN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Fresh fruit&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Candy&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;GROUP&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;BY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;weekday&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dim_product&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;category&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;由于传统数据库通常是按行存储的，这意味着对于属性（列）很多的表，哪怕只查询一个属性，也必须从磁盘上取出很多属性，无疑浪费了 IO 带宽、增大了读放大。&lt;/p&gt;
+&lt;p&gt;于是一个很自然的想法呼之欲出：每一个列分开存储好不好？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig10.png&#34; alt=&#34;ddia-3-10-store-by-column.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;不同列之间同一个行的字段可以通过下标来对应。当然也可以内嵌主键来对应，但那样存储成本就太高了。&lt;/p&gt;
+&lt;h4 id=&#34;列压缩&#34;&gt;列压缩&lt;/h4&gt;
+&lt;p&gt;将所有数据分列存储在一块，带来了一个意外的好处，由于同一属性的数据相似度高，因此更易压缩。&lt;/p&gt;
+&lt;p&gt;如果每一列中值阈相比行数要小的多，可以用&lt;strong&gt;位图编码（ &lt;em&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Bitmap_index&#34; title=&#34;bitmap encoding&#34;&gt;bitmap encoding&lt;/a&gt;&lt;/em&gt; ）&lt;/strong&gt;。举个例子，零售商可能有数十亿的销售交易，但只有 100,000 个不同的产品。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig11.png&#34; alt=&#34;ddia-3-11-compress.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图中，是一个列分片中的数据，可以看出只有 {29, 30, 31, 68, 69, 74} 六个离散值。针对每个值出现的位置，我们使用一个 bit array 来表示：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;bit map 下标对应列的下标&lt;/li&gt;
+&lt;li&gt;值为 0 则表示该下标没有出现该值&lt;/li&gt;
+&lt;li&gt;值为 1 则表示该下标出现了该值&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果 bit array 是稀疏的，即大量的都是 0，只要少量的 1。其实还可以使用 &lt;strong&gt;&lt;a href=&#34;https://zh.wikipedia.org/zh/%E6%B8%B8%E7%A8%8B%E7%BC%96%E7%A0%81&#34; title=&#34;游程编码&#34;&gt;游程编码&lt;/a&gt;（RLE， Run-length encoding）&lt;/strong&gt; 进一步压缩：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;将连续的 0 和 1，改写成 &lt;code&gt;数量+值&lt;/code&gt;，比如 &lt;code&gt;product_sk = 29&lt;/code&gt; 是 &lt;code&gt;9 个 0，1 个 1，8 个 0&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;使用一个小技巧，将信息进一步压缩。比如将同值项合并后，肯定是 0 1 交错出现，固定第一个值为 0，则交错出现的 0 和 1 的值也不用写了。则 &lt;code&gt;product_sk = 29&lt;/code&gt;  编码变成 &lt;code&gt;9，1，8&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;由于我们知道 bit array 长度，则最后一个数字也可以省掉，因为它可以通过 &lt;code&gt;array len - sum(other lens)&lt;/code&gt; 得到，则 &lt;code&gt;product_sk = 29&lt;/code&gt;  的编码最后变成：&lt;code&gt;9，1&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;位图索引很适合应对查询中的逻辑运算条件，比如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_sk&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;IN&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;（&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;68&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;，&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;69&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;）&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以转换为 &lt;code&gt;product_sk = 30&lt;/code&gt;、&lt;code&gt;product_sk = 68&lt;/code&gt;和 &lt;code&gt;product_sk = 69&lt;/code&gt;这三个 bit array 按位或（OR）。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_sk&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;31&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AND&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;store_sk&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以转换为 &lt;code&gt;product_sk = 31&lt;/code&gt;和 &lt;code&gt;store_sk = 3&lt;/code&gt;的 bit array 的按位与，就可以得到所有需要的位置。&lt;/p&gt;
+&lt;h4 id=&#34;列族&#34;&gt;列族&lt;/h4&gt;
+&lt;p&gt;书中特别提到&lt;strong&gt;列族（column families）&lt;/strong&gt;。它是 Cassandra 和 HBase 中的的概念，他们都起源于自谷歌的 &lt;a href=&#34;https://en.wikipedia.org/wiki/Bigtable&#34; title=&#34;BigTable&#34;&gt;BigTable&lt;/a&gt; 。注意到他们和&lt;strong&gt;列式（column-oriented）存储&lt;/strong&gt;有相似之处，但绝不完全相同：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;同一个列族中多个列是一块存储的，并且内嵌行键（row key）。&lt;/li&gt;
+&lt;li&gt;并且列不压缩（存疑？）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;因此 BigTable 在用的时候主要还是面向行的，可以理解为每一个列族都是一个子表。&lt;/p&gt;
+&lt;h4 id=&#34;内存带宽和向量化处理&#34;&gt;内存带宽和向量化处理&lt;/h4&gt;
+&lt;p&gt;数仓的超大规模数据量带来了以下瓶颈：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;内存处理带宽&lt;/li&gt;
+&lt;li&gt;CPU 分支预测错误和&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%81%9C%E9%A1%BF&#34; title=&#34;流水线停顿&#34;&gt;流水线停顿&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;关于内存的瓶颈可已通过前述的数据压缩来缓解。对于 CPU 的瓶颈可以使用：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;列式存储和压缩可以让数据尽可能多地缓存在 L1 中，结合位图存储进行快速处理。&lt;/li&gt;
+&lt;li&gt;使用 SIMD 用更少的时钟周期处理更多的数据。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;列式存储的排序&#34;&gt;列式存储的排序&lt;/h4&gt;
+&lt;p&gt;由于数仓查询多集中于聚合算子（比如 sum，avg，min，max），列式存储中的存储顺序相对不重要。但也免不了需要对某些列利用条件进行筛选，为此我们可以如 LSM-Tree 一样，对所有行按某一列进行排序后存储。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意，不可能同时对多列进行排序。因为我们需要维护多列间的下标间的对应关系，才可能按行取数据。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;同时，排序后的那一列，压缩效果会更好。&lt;/p&gt;
+&lt;h4 id=&#34;不同副本不同排序&#34;&gt;不同副本，不同排序&lt;/h4&gt;
+&lt;p&gt;在分布式数据库（数仓这么大，通常是分布式的）中，同一份数据我们会存储多份。对于每一份数据，我们可以按不同列有序存储。这样，针对不同的查询需求，便可以路由到不同的副本上做处理。当然，这样也最多只能建立副本数（通常是 3 个左右）列索引。&lt;/p&gt;
+&lt;p&gt;这一想法由 C-Store 引入，并且为商业数据仓库 Vertica 采用。&lt;/p&gt;
+&lt;h4 id=&#34;列式存储的写入&#34;&gt;列式存储的写入&lt;/h4&gt;
+&lt;p&gt;上述针对数仓的优化（列式存储、数据压缩和按列排序）都是为了解决数仓中常见的读写负载，读多写少，且读取都是超大规模的数据。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我们针对读做了优化，就让写入变得相对困难。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;比如 B 树的&lt;strong&gt;原地更新流&lt;/strong&gt;是不太行的。举个例子，要在中间某行插入一个数据，&lt;strong&gt;纵向&lt;/strong&gt;来说，会影响所有的列文件（如果不做 segment 的话）；为了保证多列间按下标对应，&lt;strong&gt;横向&lt;/strong&gt;来说，又得更新该行不同列的所有列文件。&lt;/p&gt;
+&lt;p&gt;所幸我们有 LSM-Tree 的追加流。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;将新写入的数据在&lt;strong&gt;内存&lt;/strong&gt;中 Batch 好，按行按列，选什么数据结构可以看需求。&lt;/li&gt;
+&lt;li&gt;然后达到一定阈值后，批量刷到&lt;strong&gt;外存&lt;/strong&gt;，并与老数据合并。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;数仓 Vertica 就是这么做的。&lt;/p&gt;
+&lt;h2 id=&#34;七总结&#34;&gt;七、总结&lt;/h2&gt;
+&lt;p&gt;内存数据结构 -&amp;gt; 序列化 -&amp;gt; 磁盘数据结构&lt;/p&gt;
+&lt;p&gt;这便是数据库存储引擎设计和选择时最常见的&lt;strong&gt;权衡（trade off）&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;恰当的&lt;strong&gt;存储格式&lt;/strong&gt;能加快写（日志结构），但是会让读取很慢；也可以加快读（查找树、B族树），但会让写入较慢。&lt;/li&gt;
+&lt;li&gt;为了弥补读性能，可以构建索引。但是会牺牲写入性能和耗费额外空间。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;存储格式一般不好动，但是索引构建与否，一般交予用户选择。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/flower-corp/lotusdb&#34;&gt;https://github.com/flower-corp/lotusdb&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;参考文献&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;《数据敏感型应用设计》&lt;/li&gt;
+&lt;li&gt;《MySQL技术内幕 InnoDB存储引擎》第二版&lt;/li&gt;
+&lt;li&gt;《ElasticSearch 权威指南》&lt;/li&gt;
+&lt;li&gt;《Lucene 原理与源码分析》&lt;/li&gt;
+&lt;li&gt;《大规模分布式存储系统：原理解析与架构实战》&lt;/li&gt;
+&lt;li&gt;《Ceph设计原理与实现》&lt;/li&gt;
+&lt;li&gt;《Ceph源码分析》&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/categories/%E5%AD%98%E5%82%A8/">存储</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/b-tree/">B&#43;Tree</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/lsm-tree/">LSM Tree</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/log-structed/">Log Structed</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/linux-io/">Linux IO</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/disk-struct/">Disk Struct</category>
+                                
+                            
+                        
+                    
+                
+            </item>
         
     </channel>
 </rss>

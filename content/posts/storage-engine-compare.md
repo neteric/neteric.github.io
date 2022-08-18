@@ -1,7 +1,9 @@
 ---
-title: "Storage Engine Compare"
+title: "存储引擎对比"
 date: 2022-08-18T16:10:03+08:00
-draft: true
+draft: false
+tags: ["B+Tree","LSM Tree", "Log Structed", "Linux IO", "Disk Struct"]
+categories: ["存储"]
 ---
 ## 一、前置知识
 
