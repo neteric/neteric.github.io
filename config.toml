@@ -1,7 +1,7 @@
 ##########################################
 # Site Settings
 
-baseURL = "https://neteric.github.io"
+baseURL = "https:/neteric.top"
 title = "neteric"
 languageCode = "en"
 hasCJKLanguage = false
