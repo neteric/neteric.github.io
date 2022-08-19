@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">MemE is a powerful and highly customizable GoHugo theme for personal blogs.</subtitle>
-    <updated>2022-08-18T23:15:59&#43;08:00</updated>
+    <updated>2022-08-19T14:05:17&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -20,31 +20,45 @@
             <title type="text">存储引擎对比</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/storage-engine-compare/" />
             <id>https://neteric.github.io/posts/storage-engine-compare/</id>
-            <updated>2022-08-18T23:15:47&#43;08:00</updated>
+            <updated>2022-08-19T13:53:44&#43;08:00</updated>
             <published>2022-08-18T16:10:03&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
                     <email>neteric@126.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">一、前置知识 1. 硬盘结构 http://info.mrtlab.com/picdoc/Hard-disk-structure.html
-https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E5%86%99%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9A,%E6%98%AF%E4%B8%8D%E4%BC%9A%E6%94%B9%E5%8F%98%E7%9A%84%E3%80%82
-结论：顺序写速度远远大于随机写
-2. Linux IO流程 结论： 一次硬盘读取IO路径非常长，要经历多次上下文切换
-3. 存储分类 结构化数据 可以从名称中看出，是高度组织和整齐格式化的数据。结构化数据可以轻易放入表格和电子表格中的数据类型，典型的比如使用关系型数据库表示和存储，表现为二维形式的数据。一般特点是：数据以行为单位，一行数据表示一个实体的信息，每一行数据的属性是相同的
-结构化数据的存储 关系型数据库：如 MySQL、PostreSQL、Oracle、SQLServer， 其组成一般包括： 连接器，解析器，优化器，执行器，存储引擎， 管理硬盘的单机文件系统 半结构化数据 半结构化数据是结构化数据的一种形式，它并不符合关系型数据库或其他数据表的形式关联起来的数据模型结构，但包含相关标记，用来分隔语义元素以及对记录和字段进行分层。因此，它也被称为自描述的结构。常见的半结构数据格式有XML、JSON、Yaml
-半结构化数据的存储 K/V存储：Rocksdb、LevelDB、BlotDB 其组成一般包括：连接器，优化器，存储引擎，单机文件系统 文档存储： MongoDB、ElasticSearch 列式存储（也叫表格存储）： ClickHouse、Apache Druid 、Hbase 内存K/V存储： Redis、Memcache 非结构化数据 数据结构不规则或不完整，没有预定义的数据模型，不方便用数据库二维逻辑表来表现的数据。本质上是结构化数据之外的一切数据，如：全文文本、图片、音频、影视、超媒体等信息
-非结构化数据的存储 单机文件系统： 如 ext2/3/4, xfs, btrfs, bluefs,ntfs, fat32</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">一、背景 1. 硬盘结构 硬盘内部主要部件为磁盘盘片、传动手臂、读写磁头和主轴马达。实际数据都是写在盘片上，读写主要是通过传动手臂上的读写磁头来完成。实际运行时，主轴让磁盘盘片转动，然后传动手臂可伸展让读取头在盘片上进行读写操作。磁盘物理结构如下图所示：
+由于单一盘片容量有限，一般硬盘都有两张以上的盘片，每个盘片有两面，都可记录信息，所以一张盘片对应着两个磁头。盘片被分为许多扇形的区域，每个区域叫一个扇区，硬盘中每个扇区的大小固定为512字节。盘片表面上以盘片中心为圆心，不同半径的同心圆称为磁道，不同盘片相同半径的磁道所组成的圆柱称为柱面。磁道与柱面都是表示不同半径的圆，在许多场合，磁道和柱面可以互换使用。磁盘盘片垂直视角如下图所示
+2. 影响硬盘性能的因素 影响磁盘的关键因素是磁盘服务时间，即磁盘完成一个I/O请求所花费的时间，它由寻道时间、旋转延迟和数据传输时间三部分构成。
+寻道时间 Tseek是指将读写磁头移动至正确的磁道上所需要的时间。寻道时间越短，I/O操作越快，目前磁盘的平均寻道时间一般在3-15ms。</summary>
             
-                <content type="html">&lt;h2 id=&#34;一前置知识&#34;&gt;一、前置知识&lt;/h2&gt;
+                <content type="html">&lt;h2 id=&#34;一背景&#34;&gt;一、背景&lt;/h2&gt;
 &lt;h3 id=&#34;1-硬盘结构&#34;&gt;1. 硬盘结构&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;http://info.mrtlab.com/picdoc/Hard-disk-structure.html&#34;&gt;http://info.mrtlab.com/picdoc/Hard-disk-structure.html&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E5%86%99%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9A,%E6%98%AF%E4%B8%8D%E4%BC%9A%E6%94%B9%E5%8F%98%E7%9A%84%E3%80%82&#34;&gt;https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E5%86%99%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9A,%E6%98%AF%E4%B8%8D%E4%BC%9A%E6%94%B9%E5%8F%98%E7%9A%84%E3%80%82&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;结论：顺序写速度远远大于随机写&lt;/p&gt;
-&lt;h3 id=&#34;2-linux-io流程&#34;&gt;2. Linux IO流程&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/Linux-storage-stack-diagram_v4.10.png&#34; alt=&#34;Linux Storage Stack Diagram - Thomas-Krenn-Wiki&#34;&gt;&lt;/p&gt;
-&lt;p&gt;结论： 一次硬盘读取IO路径非常长，要经历多次上下文切换&lt;/p&gt;
-&lt;h3 id=&#34;3-存储分类&#34;&gt;3. 存储分类&lt;/h3&gt;
+&lt;p&gt;硬盘内部主要部件为磁盘盘片、传动手臂、读写磁头和主轴马达。实际数据都是写在盘片上，读写主要是通过传动手臂上的读写磁头来完成。实际运行时，主轴让磁盘盘片转动，然后传动手臂可伸展让读取头在盘片上进行读写操作。磁盘物理结构如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://info.mrtlab.com/uploadfile/201305/14/104000249.JPG&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由于单一盘片容量有限，一般硬盘都有两张以上的盘片，每个盘片有两面，都可记录信息，所以一张盘片对应着两个磁头。盘片被分为许多扇形的区域，每个区域叫一个扇区，硬盘中每个扇区的大小固定为512字节。盘片表面上以盘片中心为圆心，不同半径的同心圆称为磁道，不同盘片相同半径的磁道所组成的圆柱称为柱面。磁道与柱面都是表示不同半径的圆，在许多场合，磁道和柱面可以互换使用。磁盘盘片垂直视角如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://info.mrtlab.com/uploadfile/201305/14/1040344565.jpg&#34; alt=&#34;img&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2-影响硬盘性能的因素&#34;&gt;2. 影响硬盘性能的因素&lt;/h3&gt;
+&lt;p&gt;影响磁盘的关键因素是磁盘服务时间，即磁盘完成一个I/O请求所花费的时间，它由寻道时间、旋转延迟和数据传输时间三部分构成。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;寻道时间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Tseek是指将读写磁头移动至正确的磁道上所需要的时间。寻道时间越短，I/O操作越快，目前磁盘的平均寻道时间一般在3-15ms。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;旋转延迟&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Trotation是指盘片旋转将请求数据所在的扇区移动到读写磁盘下方所需要的时间。旋转延迟取决于磁盘转速，通常用磁盘旋转一周所需时间的1/2表示。比如：7200rpm的磁盘平均旋转延迟大约为60*1000/7200/2 = 4.17ms，而转速为15000rpm的磁盘其平均旋转延迟为2ms。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;数据传输时间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Ttransfer是指完成传输所请求的数据所需要的时间，它取决于数据传输率，其值等于数据大小除以数据传输率。目前IDE/ATA能达到133MB/s，SATA II可达到300MB/s的接口数据传输率，数据传输时间通常远小于前两部分消耗时间。简单计算时可忽略。&lt;/p&gt;
+&lt;p&gt;结论：**机械硬盘的连续读写性能很好，但随机读写性能很差，**这主要是因为磁头移动到正确的磁道上需要时间，随机读写时，磁头需要不停的移动，时间都浪费在了磁头寻址上，所以性能不高&lt;/p&gt;
+&lt;h3 id=&#34;3-linux-io流程&#34;&gt;3. Linux IO流程&lt;/h3&gt;
+&lt;p&gt;类似于网络的分层结构，下图显示了Linux系统中对于磁盘的一次读请求在核心空间中所要经历的层次模型。从图中看出：对于磁盘的一次读请求，首先经过虚拟文件系统层（VFS Layer），其次是具体的文件系统层（例如Ext2），接下来是Cache层（Page Cache Layer）、通用块层（Generic Block Layer）、I/O调度层（I/O Scheduler Layer）、块设备驱动层（Block Device Driver Layer），最后是物理块设备层（Block Device Layer）&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/storage_engine_compare/fig01.png&#34; alt=&#34;image-20220819105617539&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.thomas-krenn.com/de/wikiDE/images/e/e0/Linux-storage-stack-diagram_v4.10.png&#34;&gt;kernel 4.10 linux io stack&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;结论： &lt;strong&gt;一次硬盘读取IO路径非常长，要经历用户态到内核态的上下文切换，IO调度，块设备驱动，中断等逻辑&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;4-存储分类&#34;&gt;4. 存储分类&lt;/h3&gt;
 &lt;h4 id=&#34;结构化数据&#34;&gt;结构化数据&lt;/h4&gt;
 &lt;p&gt;可以从名称中看出，是高度组织和整齐格式化的数据。结构化数据可以轻易放入表格和电子表格中的数据类型，典型的比如使用关系型数据库表示和存储，表现为二维形式的数据。一般特点是：数据以行为单位，一行数据表示一个实体的信息，每一行数据的属性是相同的&lt;/p&gt;
 &lt;h5 id=&#34;结构化数据的存储&#34;&gt;结构化数据的存储&lt;/h5&gt;
@@ -72,13 +86,7 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;a href=&#34;https://duodian.feishu.cn/file/boxcnPObkzRjzgF1mfrwJnzbMPc&#34;&gt;https://duodian.feishu.cn/file/boxcnPObkzRjzgF1mfrwJnzbMPc&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;4-存储使用场景&#34;&gt;4. 存储使用场景&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;OLTP&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;OLAP&lt;/p&gt;
+&lt;h3 id=&#34;5-存储使用场景&#34;&gt;5. 存储使用场景&lt;/h3&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -145,8 +153,6 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
 &lt;h2 id=&#34;二lsm-tree的起源&#34;&gt;二、LSM Tree的起源&lt;/h2&gt;
 &lt;h3 id=&#34;1-世界上最简单的数据库&#34;&gt;1. 世界上最简单的数据库&lt;/h3&gt;
 &lt;p&gt;首先来看，世界上“最简单”的数据库，由两个 Bash 函数构成：&lt;/p&gt;
@@ -334,7 +340,6 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;h3 id=&#34;5-b-树&#34;&gt;5. B+ 树&lt;/h3&gt;
 &lt;p&gt;B+ 树就是对 B 树做了一个升级，MySQL 中索引的数据结构就是采用了 B+ 树，B+ 树结构如下图：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://img-blog.csdnimg.cn/img_convert/b6678c667053a356f46fc5691d2f5878.png&#34; alt=&#34;图片&#34;&gt;&lt;/p&gt;
-&lt;p&gt;其特点有：&lt;/p&gt;
 &lt;p&gt;B+ 树与 B 树差异的点，主要是以下这几点：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;叶子节点（最底部的节点）才会存放实际数据（索引+记录），非叶子节点只会存放索引；&lt;/li&gt;
@@ -342,9 +347,7 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;li&gt;非叶子节点的索引也会同时存在在子节点中，并且是在子节点中所有索引的最大（或最小）。&lt;/li&gt;
 &lt;li&gt;非叶子节点中有多少个子节点，就有多少个索引；&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig06.png&#34; alt=&#34;ddia-3-6-b-tree-lookup.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;查找&lt;/strong&gt;。从根节点出发，进行二分查找，然后加载新的页到内存中，继续二分，直到命中或者到叶子节点。 查找复杂度，树的高度—— O(lgn)，影响树高度的因素：分支因子（分叉数，通常是几百个）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig07.png&#34; alt=&#34;ddia-3-7-b-tree-grow-by-split.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;插入 or 更新&lt;/strong&gt;。和查找过程一样，定位到原 Key 所在页，插入或者更新后，将页完整写回。如果页剩余空间不够，则分裂后写入。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;分裂 or 合并&lt;/strong&gt;。级联分裂和合并。&lt;/p&gt;
 &lt;ul&gt;
@@ -481,7 +484,7 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;p&gt;不同列之间同一个行的字段可以通过下标来对应。当然也可以内嵌主键来对应，但那样存储成本就太高了。&lt;/p&gt;
 &lt;h4 id=&#34;列压缩&#34;&gt;列压缩&lt;/h4&gt;
 &lt;p&gt;将所有数据分列存储在一块，带来了一个意外的好处，由于同一属性的数据相似度高，因此更易压缩。&lt;/p&gt;
-&lt;p&gt;如果每一列中值阈相比行数要小的多，可以用&lt;strong&gt;位图编码（ &lt;em&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Bitmap_index&#34; title=&#34;bitmap encoding&#34;&gt;bitmap encoding&lt;/a&gt;&lt;/em&gt; ）&lt;/strong&gt;。举个例子，零售商可能有数十亿的销售交易，但只有 100,000 个不同的产品。&lt;/p&gt;
+&lt;p&gt;如果每一列中值域相比行数要小的多，可以用&lt;strong&gt;位图编码（ &lt;em&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Bitmap_index&#34; title=&#34;bitmap encoding&#34;&gt;bitmap encoding&lt;/a&gt;&lt;/em&gt; ）&lt;/strong&gt;。举个例子，零售商可能有数十亿的销售交易，但只有 100,000 个不同的产品。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/ch03-fig11.png&#34; alt=&#34;ddia-3-11-compress.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;上图中，是一个列分片中的数据，可以看出只有 {29, 30, 31, 68, 69, 74} 六个离散值。针对每个值出现的位置，我们使用一个 bit array 来表示：&lt;/p&gt;
 &lt;ol&gt;
@@ -514,13 +517,6 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;可以转换为 &lt;code&gt;product_sk = 31&lt;/code&gt;和 &lt;code&gt;store_sk = 3&lt;/code&gt;的 bit array 的按位与，就可以得到所有需要的位置。&lt;/p&gt;
-&lt;h4 id=&#34;列族&#34;&gt;列族&lt;/h4&gt;
-&lt;p&gt;书中特别提到&lt;strong&gt;列族（column families）&lt;/strong&gt;。它是 Cassandra 和 HBase 中的的概念，他们都起源于自谷歌的 &lt;a href=&#34;https://en.wikipedia.org/wiki/Bigtable&#34; title=&#34;BigTable&#34;&gt;BigTable&lt;/a&gt; 。注意到他们和&lt;strong&gt;列式（column-oriented）存储&lt;/strong&gt;有相似之处，但绝不完全相同：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;同一个列族中多个列是一块存储的，并且内嵌行键（row key）。&lt;/li&gt;
-&lt;li&gt;并且列不压缩（存疑？）&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;因此 BigTable 在用的时候主要还是面向行的，可以理解为每一个列族都是一个子表。&lt;/p&gt;
 &lt;h4 id=&#34;内存带宽和向量化处理&#34;&gt;内存带宽和向量化处理&lt;/h4&gt;
 &lt;p&gt;数仓的超大规模数据量带来了以下瓶颈：&lt;/p&gt;
 &lt;ol&gt;
@@ -554,14 +550,7 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;/ol&gt;
 &lt;p&gt;数仓 Vertica 就是这么做的。&lt;/p&gt;
 &lt;h2 id=&#34;七总结&#34;&gt;七、总结&lt;/h2&gt;
-&lt;p&gt;内存数据结构 -&amp;gt; 序列化 -&amp;gt; 磁盘数据结构&lt;/p&gt;
-&lt;p&gt;这便是数据库存储引擎设计和选择时最常见的&lt;strong&gt;权衡（trade off）&lt;/strong&gt;：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;恰当的&lt;strong&gt;存储格式&lt;/strong&gt;能加快写（日志结构），但是会让读取很慢；也可以加快读（查找树、B族树），但会让写入较慢。&lt;/li&gt;
-&lt;li&gt;为了弥补读性能，可以构建索引。但是会牺牲写入性能和耗费额外空间。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;存储格式一般不好动，但是索引构建与否，一般交予用户选择。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/flower-corp/lotusdb&#34;&gt;https://github.com/flower-corp/lotusdb&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在存储引擎领域，没有真正的银弹，纵观各种现在的存储引擎的存储解决方案，都是在读和写之间做权衡（trade off）。恰当的&lt;strong&gt;存储格式&lt;/strong&gt;能加快写（比如LSM Tree），但是会让读取很慢；也可以加快读（查找树、B族树），但会让写入较慢。为了弥补读性能，可以构建索引，但是会牺牲写入性能和耗费额外空间。只有合理的硬盘存储结构和内存数据结构（索引）的结合，才能发挥出特定的效果，解决特定的问题。&lt;/p&gt;
 &lt;p&gt;参考文献&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;《数据敏感型应用设计》&lt;/li&gt;
@@ -571,6 +560,9 @@ https://cloud.tencent.com/developer/article/1360326#:~:text=%E7%A3%81%E7%9B%98%E
 &lt;li&gt;《大规模分布式存储系统：原理解析与架构实战》&lt;/li&gt;
 &lt;li&gt;《Ceph设计原理与实现》&lt;/li&gt;
 &lt;li&gt;《Ceph源码分析》&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://lrita.github.io/images/posts/filesystem/Linux.Kernel.IO.Scheduler.pdf&#34;&gt;https://lrita.github.io/images/posts/filesystem/Linux.Kernel.IO.Scheduler.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://tech.meituan.com/2017/05/19/about-desk-io.html&#34;&gt;https://tech.meituan.com/2017/05/19/about-desk-io.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://info.mrtlab.com/picdoc/Hard-disk-structure.html&#34;&gt;http://info.mrtlab.com/picdoc/Hard-disk-structure.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 </content>
             
