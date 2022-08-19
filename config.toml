@@ -354,7 +354,7 @@ uglyURLs = false
     siteLogo = "/images/avatar.jpeg"
     # Note: used for JSON-LD, Open Graph
 
-    siteDescription = "MemE is a powerful and highly customizable GoHugo theme for personal blogs."
+    siteDescription = "neteric's blog, record work and life"
     # Note: used for HTML head meta, JSON-LD,
     #       Open Graph, Atom, RSS
 

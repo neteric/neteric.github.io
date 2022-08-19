@@ -9,7 +9,7 @@
     <channel>
         <title>neteric</title>
         <link>https://neteric.github.io/</link>
-        <description>MemE is a powerful and highly customizable GoHugo theme for personal blogs.</description>
+        <description>neteric&#39;s blog, record work and life</description>
         <generator>Hugo 0.101.0 https://gohugo.io/</generator>
         
             <language>en</language>
@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
         
-        <lastBuildDate>Fri, 19 Aug 2022 14:05:17 &#43;0800</lastBuildDate>
+        <lastBuildDate>Fri, 19 Aug 2022 14:37:33 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://neteric.github.io/rss.xml" />
         
@@ -617,6 +617,126 @@
                                 
                                 
                                     <category domain="https://neteric.github.io/tags/disk-struct/">Disk Struct</category>
+                                
+                            
+                        
+                    
+                
+            </item>
+        
+            <item>
+                <title>关于负载均衡</title>
+                <link>https://neteric.github.io/posts/about_load_balance/</link>
+                <guid isPermaLink="true">https://neteric.github.io/posts/about_load_balance/</guid>
+                <pubDate>Sat, 29 Feb 2020 17:22:54 &#43;0800</pubDate>
+                
+                    <author>neteric@126.com (neteric)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
+                
+                    <description>&lt;h3 id=&#34;为何需要负载均衡&#34;&gt;为何需要负载均衡？&lt;/h3&gt;
+&lt;p&gt;业务初期，我们一般会先使用单台服务器对外提供服务。随着业务流量越来越大，单台服务器无论如何优化，无论采用多好的硬件，总会有性能天花板，当单服务器的性能无法满足业务，自然就想到把多台服务器组成集群来提高请求处理能力。集群必须要以统一的入口方式对外提供服务，所以需要一个 &lt;strong&gt;流量调度器&lt;/strong&gt; ，通过均衡的算法将用户大量的请求均衡地分发到后端集群不同的服务器上&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;负载平衡&lt;/strong&gt;（Load balancing）是一种&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA&#34;&gt;计算机&lt;/a&gt;技术，用来在多个计算机（&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%9B%86%E7%BE%A4&#34;&gt;计算机集群&lt;/a&gt;）、网络连接、CPU、磁盘驱动器或其他资源中分配负载，以达到最优化资源使用、最大化吞吐率、最小化响应时间、同时避免过载的目的。 使用带有负载平衡的多个服务器组件，取代单一的组件，可以通过&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E5%86%97%E9%A4%98&#34;&gt;冗余&lt;/a&gt;提高可靠性。负载平衡服务通常是由专用软件和硬件来完成。 主要作用是将大量作业合理地分摊到多个操作单元上进行执行，用于解决互联网架构中的&lt;strong&gt;高并发&lt;/strong&gt;和&lt;strong&gt;高可用&lt;/strong&gt;的问题。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;使用负载均衡带来的好处：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;提高了系统的整体性能&lt;/li&gt;
+&lt;li&gt;提高了系统的扩展性&lt;/li&gt;
+&lt;li&gt;提高了系统的可靠性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;负载均衡器从广义上可以分为 3 类：DNS 实现负载均衡、硬件负载均衡、软件负载均衡&lt;/p&gt;
+&lt;h4 id=&#34;一dns-实现负载均衡&#34;&gt;（一）DNS 实现负载均衡&lt;/h4&gt;
+&lt;p&gt;一个域名通过 DNS 解析到多个 IP，每个 IP 对应不同的服务器实例，这样就完成了流量的调度，虽然没有使用常规的负载均衡器，但也的确完成了负载均衡的功能。&lt;/p&gt;
+&lt;p&gt;通过 DNS 实现负载均衡的方式，最大的优点就是实现简单，成本低，无需自己开发或维护负载均衡设备，不过存在一些缺点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;服务器故障切换延迟大，服务器升级不方便&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;我们知道 DNS 与用户之间是层层的缓存，即便是在故障发生时及时通过 DNS 修改或摘除故障服务器，但中间由于经过运营商的 DNS 缓存，且缓存很有可能不遵循 TTL 规则，导致 DNS 生效时间变得非常缓慢，有时候一天后还会有些许的请求流量。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;流量调度不均衡，粒度太粗&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;DNS 调度的均衡性，受地区运营商 LocalDNS 返回 IP 列表的策略有关系，有的运营商并不会轮询返回多个不同的 IP 地址。另外，某个运营商 LocalDNS 背后服务了多少用户，这也会构成流量调度不均的重要因素。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;流量分配策略比较简单，支持的算法较少&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;DNS 一般只支持 RR 的轮询方式，流量分配策略比较简单，不支持权重、Hash 等调度算法。
+DNS 支持的 IP 列表有限制。我们知道 DNS 使用 UDP 报文进行信息传递，每个 UDP 报文大小受链路的 MTU 限制，所以报文中存储的 IP 地址数量也是非常有限的，阿里 DNS 系统针对同一个域名支持配置 10 个不同的 IP 地址。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;一些大公司一般也会利用 DNS 来实现地理级别的负载均衡，实现就近访问，提高访问速度，这种方式一般是入口流量的基础负载均衡，下层会有更专业的负载均衡设备实现的负载架构。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&#34;二硬件负载均衡&#34;&gt;（二）硬件负载均衡&lt;/h4&gt;
+&lt;p&gt;硬件负载均衡是通过专门的硬件设备来实现负载均衡功能，类似于交换机、路由器，是一个负载均衡专用的网络设备。目前业界典型的硬件负载均衡设备有两款：F5 和 A10。这类设备性能强劲、功能强大，但价格非常昂贵，一般只有 “土豪” 公司才会使用此类设备，普通业务量级的公司一般负担不起，二是业务量没那么大，用这些设备也是浪费。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;硬件负载均衡的优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能强大&lt;/strong&gt;：全面支持各层级的负载均衡，支持全面的负载均衡算法。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;性能强大&lt;/strong&gt;：性能远超常见的软件负载均衡器。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;稳定性高&lt;/strong&gt;：商用硬件负载均衡，经过了良好的严格测试，经过大规模使用，稳定性高。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;安全防护&lt;/strong&gt;：除了具备负载均衡外，还具备防火墙、防 DDoS 攻击等安全功能，貌似还支持 SNAT 功能。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;硬件负载均衡的缺点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;价格昂贵&lt;/li&gt;
+&lt;li&gt;扩展性差，无法进行扩展和定制。&lt;/li&gt;
+&lt;li&gt;调试和维护比较麻烦，需要专业人员。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;三软件负载均衡&#34;&gt;（三）软件负载均衡&lt;/h4&gt;
+&lt;p&gt;软件负载均衡，可以在普通的服务器上运行负载均衡软件，实现负载均衡功能。目前常见的有 Nginx、HAproxy、LVS&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Nginx&lt;/strong&gt; ：是 7 层负载均衡，支持 HTTP、E-mail 协议，貌似也支持 4 层负载均衡了。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;HAproxy&lt;/strong&gt;：HAProxy提供了L4(TCP)和L7(HTTP)两种负载均衡能力，具备丰富的功能。HAProxy的社区非常活跃，版本更新快速（最新稳定版1.7.2于2017/01/13推出）。最关键的是，HAProxy具备媲美商用负载均衡器的性能和稳定性&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LVS&lt;/strong&gt; ：是纯 4 层的负载均衡，运行在内核态，性能是软件负载均衡中最高的，因为是在四层，所以也更通用一些。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;软件负载均衡的优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;简单&lt;/strong&gt;：无论是部署还是维护都比较简单。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;便宜&lt;/strong&gt;：买个 Linux 服务器，装上软件即可。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;灵活&lt;/strong&gt;：4 层和 7 层负载均衡可以根据业务进行选择；也可以根据业务特点，比较方便进行扩展和定制功能。
+据了解如 BAT 等大厂都是 LVS 重度使用者，就是因为 LVS 非常出色的性能，能为公司节省很大成本，了解到很多大公司使用的 LVS 都是定制版的，做过很多性能方面的优化，比开源版本性能会高出很多。目前只有淘宝开源过优化过的 alibaba/LVS，支持 FNAT 模式，但是也很久没有更新过了。另外爱奇艺去年开源出了 DPDK 版本的 LVS，名叫 DPVS，性能非常强悍。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/categories/network/">network</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/network/">network</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/loadbalancer/">LoadBalancer</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/lvs/">LVS</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/nginx/">Nginx</category>
                                 
                             
                         
