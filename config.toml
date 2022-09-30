@@ -6,7 +6,7 @@ title = "neteric"
 languageCode = "en"
 hasCJKLanguage = false
 # Copyright information (Markdown supported)
-copyright = "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)"
+copyright = "[蜀ICP备2022023345号](http://beian.miit.gov.cn/)"
 publishDir = "docs"
 
 # Name of theme
@@ -40,7 +40,7 @@ enableRobotsTXT = true
 # Number of items per page in paginated
 # lists (valid for the `posts` homepage
 # layout in MemE)
-paginate = 5
+paginate = 1
 
 # URL related
 disablePathToLower = false
@@ -461,9 +461,9 @@ uglyURLs = false
     chineseZodiac = true
 
     # Translate the year? (valid for title)
-    i18nYear = false
+    i18nYear = true
     # Translate the month? (valid for title)
-    i18nMonth = false
+    i18nMonth = true
 
 
     ######################################
@@ -494,7 +494,7 @@ uglyURLs = false
     #       name of the folder under the
     #       site’s `content` directory.
 
-    # mainSections = ["posts"]
+    mainSections = ["posts"]
 
 
     ######################################
@@ -633,7 +633,7 @@ uglyURLs = false
     ######################################
     # Mermaid (https://github.com/mermaid-js/mermaid)
 
-    enableMermaid = false
+    enableMermaid = true
     # Note: *global settings*
     #       `mermaid` in post’s Front Matter
     #       has a higher priority than here
@@ -654,11 +654,13 @@ uglyURLs = false
     #       has a higher priority than here
 
     # directly load the comments after pages loaded
-    autoLoadComments = false
+    autoLoadComments = true
 
     ## Disqus
-    enableDisqus = true
+    enableDisqus = false
     disqusShortname = ""
+
+    displayCommentsInHome = true
 
     ## Valine
     enableValine = false
@@ -682,9 +684,9 @@ uglyURLs = false
     # Note: https://valine.js.org/
 
     ## Utterances
-    enableUtterances = false
-    utterancesRepo = ""
-    utterancesIssueTerm = "pathname"
+    enableUtterances = true
+    utterancesRepo = "neteric/neteric.github.io"
+    utterancesIssueTerm = "title"
     utterancesTheme = "github-light"
     utterancesThemeDark = "photon-dark"
     utterancesLabel = ""
@@ -912,7 +914,7 @@ uglyURLs = false
 
     # Replace the image link in the HTML
     # head meta also?
-    headAlso = false
+    headAlso = true
 
 
     ######################################
@@ -1095,20 +1097,20 @@ uglyURLs = false
     # Note: new Markdown syntax created by MemE
     #       `..文本..`
 
-    enableEmphasisPoint = false
+    enableEmphasisPoint = true
 
     ######################################
     ## Chinese Punctuation Glyph Correction
 
-    enableChinesePunctuationGlyphCorrection = false
+    enableChinesePunctuationGlyphCorrection = true
 
 
     ######################################
     # Post Copyright
 
-    enablePostCopyright = true
+    enablePostCopyright = false
 
-    displayPostCopyright = true
+    displayPostCopyright = false
     # Note: *global settings*
     #       `displayCopyright` in post’s Front Matter
     #       has a higher priority than here
@@ -1117,15 +1119,15 @@ uglyURLs = false
     ######################################
     # Post Updated Badge
 
-    enablePostUpdatedBadge = true
+    enablePostUpdatedBadge = false
 
-    displayUpdatedBadge = true
+    displayUpdatedBadge = false
     # Note: *global settings*
     #       `badge` in post’s Front Matter
     #       has a higher priority than here
 
     # Add `title` attribute?
-    enableBadgeTitle = true
+    enableBadgeTitle = false
     badgeTitlePrefix = "Updated @ "
 
 
@@ -1170,13 +1172,13 @@ uglyURLs = false
     displayShareOnText = false
 
     shareOnTwitter = true
-    shareOnFacebook = false
-    shareOnLinkedIn = false
+    shareOnFacebook = true
+    shareOnLinkedIn = true
     shareOnTelegram = true
     shareOnWeibo = true
     shareOnDouban = true
-    shareOnQQ = false
-    shareOnQzone = false
+    shareOnQQ = true
+    shareOnQzone = true
 
     shareViaQRCode = true
 
@@ -1184,9 +1186,9 @@ uglyURLs = false
     ######################################
     # Related Posts
 
-    enableRelatedPosts = true
+    enableRelatedPosts = false
 
-    displayRelatedPosts = true
+    displayRelatedPosts = false
     # Note: *global settings*
     #       `related` in post’s Front Matter
     #       has a higher priority than here
@@ -1199,7 +1201,7 @@ uglyURLs = false
     ######################################
     # Post Tags
 
-    enablePostTags = true
+    enablePostTags = false
 
     postTagsIcon = "tag"
 
@@ -1227,8 +1229,8 @@ uglyURLs = false
     ######################################
     # Minimal Footer
 
-    enableMinimalFooter = true
-    enableVerticalBarStructure = false
+    enableMinimalFooter = false
+    enableVerticalBarStructure = true
     # Note: If you enable this, the
     #       categories or sections that
     #       displayed on the right will
@@ -1236,7 +1238,7 @@ uglyURLs = false
     #       categories or sections and are
     #       separated by vertical bar(|).
 
-    enableAboutPageMinimalFooter = false
+    enableAboutPageMinimalFooter = true
 
 
     ######################################
@@ -1248,7 +1250,7 @@ uglyURLs = false
 
     displayBackToTopInHome = true
 
-    displayBackToTopOnMobile = false
+    displayBackToTopOnMobile = true
 
     backToTopIcon = "arrow-up"
 
@@ -1258,24 +1260,24 @@ uglyURLs = false
 
     enableFooter = true
 
-    displayFooter = false
+    displayFooter = true
 
     displayFooterInHome = true
 
     displayCopyleftSymbol = false
-    displayCopyrightSymbol = true
+    displayCopyrightSymbol = false
 
-    displaySiteCreatedYear = true
+    displaySiteCreatedYear = false
 
     # Leave it empty("") if you don’t want
     # the icon
     iconBetweenYearAndAuthor = "heart"
     iconColor = "#f06292"
     # Enable heartbeat animation?
-    iconAnimation = true
+    iconAnimation = false
 
     # Display links to Hugo and MemE?
-    displayPoweredBy = true
+    displayPoweredBy = false
 
     displaySiteCopyright = true
 
