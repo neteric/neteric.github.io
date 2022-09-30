@@ -240,10 +240,10 @@ uglyURLs = false
     #[[menu.main]]
     #    weight = 7
     #    identifier = "lang-switcher"
-    [[menu.main]]
-        weight = 8
-        identifier = "search"
-        post = "search"
+    # [[menu.main]]
+    #     weight = 8
+    #     identifier = "search"
+    #     post = "search"
 
 
 
@@ -259,7 +259,7 @@ uglyURLs = false
     enableHeaderAutoHide = false
     # Note: works for header layout flex only
 
-    displayHeaderInHome = true
+    displayHeaderInHome = false
     # Note: invalid for header layout flex
 
     headerBackground = "linear-gradient(90deg, #f795331a 0, #f370551a 15%, #ef4e7b1a 30%, #a166ab1a 44%, #5073b81a 58%, #1098ad1a 72%, #07b39b1a 86%, #6dba821a 100%)"
@@ -309,7 +309,7 @@ uglyURLs = false
     # Note: invalid for header layout flex
 
     # Highlight current menu item by section?
-    activeInSection = false
+    activeInSection = true
     # Note: if true, the menu item in the
     #       post page will be highlighted
     #       also if that post’s section is
