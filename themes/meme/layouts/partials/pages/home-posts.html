@@ -23,12 +23,13 @@
             <ul class="pagination">
                 {{ if $paginator.HasPrev }}
                     <li class="pagination-prev">
-                        <a href="{{ $paginator.Prev.URL }}" rel="prev">&lt; {{ i18n "prevPage" }}</a>
+                        <a href="{{ $paginator.Prev.URL }}" rel="prev">{{ partial "utils/icon.html" (dict "$" . "name" "page-left") }} &nbsp;{{ i18n "prevPage" }}</a>
                     </li>
                 {{ end }}
                 {{ if $paginator.HasNext }}
                     <li class="pagination-next">
-                        <a href="{{ $paginator.Next.URL }}" rel="next">{{ i18n "nextPage" }} &gt;</a>
+                        <a href="{{ $paginator.Next.URL }}" rel="next">{{ i18n "nextPage" }}&nbsp;{{ partial "utils/icon.html" (dict "$" . "name" "page-right") }}</a>
+                        
                     </li>
                 {{ end }}
             </ul>

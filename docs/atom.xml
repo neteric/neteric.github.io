@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">neteric&#39;s blog, record work and life</subtitle>
-    <updated>2022-09-30T18:58:41&#43;08:00</updated>
+    <updated>2022-09-30T22:25:45&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -20,7 +20,7 @@
             <title type="text">存储引擎对比</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/storage-engine-compare/" />
             <id>https://neteric.github.io/posts/storage-engine-compare/</id>
-            <updated>2022-09-30T16:43:24&#43;08:00</updated>
+            <updated>2022-09-30T21:09:48&#43;08:00</updated>
             <published>2022-08-18T16:10:03&#43;08:00</published>
             <author>
                     <name>neteric</name>
@@ -622,7 +622,7 @@ B树相对平衡二叉树在节点空间的利用率上进行改进，B树在每
             <title type="text">关于负载均衡</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/about_load_balance/" />
             <id>https://neteric.github.io/posts/about_load_balance/</id>
-            <updated>2022-09-30T16:43:24&#43;08:00</updated>
+            <updated>2022-09-30T21:09:48&#43;08:00</updated>
             <published>2020-02-29T17:22:54&#43;08:00</published>
             <author>
                     <name>neteric</name>

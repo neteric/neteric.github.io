@@ -60,7 +60,7 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "datePublished": "2020-02-29T17:22:54+08:00",
-        "dateModified": "2022-09-30T16:43:24+08:00",
+        "dateModified": "2022-09-30T21:09:48+08:00",
         "url": "https://neteric.github.io/posts/about_load_balance/",
         "headline": "关于负载均衡",
         "description": "为何需要负载均衡？ 业务初期，我们一般会先使用单台服务器对外提供服务。随着业务流量越来越大，单台服务器无论如何优化，无论采用多好的硬件，总会有性能天花板，当单服务器的性能无法满足业务，自然就想到把多台服务器组成集群来提高请求处理能力。集群必须要以统一的入口方式对外提供服务，所以需要一个 流量调度器 ，通过均衡的算法将用户大量的请求均衡地分发到后端集群不同的服务器上\n负载平衡（Load balancing）是一种计算机技术，用来在多个计算机（计算机集群）、网络连接、CPU、磁盘驱动器或其他资源中分配负载，以达到最优化资源使用、最大化吞吐率、最小化响应时间、同时避免过载的目的。 使用带有负载平衡的多个服务器组件，取代单一的组件，可以通过冗余提高可靠性。负载平衡服务通常是由专用软件和硬件来完成。 主要作用是将大量作业合理地分摊到多个操作单元上进行执行，用于解决互联网架构中的高并发和高可用的问题。\n使用负载均衡带来的好处：\n提高了系统的整体性能 提高了系统的扩展性 提高了系统的可靠性 负载均衡器从广义上可以分为 3 类：DNS 实现负载均衡、硬件负载均衡、软件负载均衡",
@@ -114,7 +114,7 @@
 <meta property="og:locale" content="en" /><meta property="og:image" content="https://neteric.github.io/images/avatar.jpeg" />
     <meta property="og:type" content="article" />
     <meta property="article:published_time" content="2020-02-29T17:22:54&#43;08:00" />
-    <meta property="article:modified_time" content="2022-09-30T16:43:24&#43;08:00" />
+    <meta property="article:modified_time" content="2022-09-30T21:09:48&#43;08:00" />
     
     <meta property="article:section" content="posts" />
 
@@ -245,7 +245,7 @@
     
     
         
-        <time datetime="2022-09-30T16:43:24&#43;08:00" class="post-meta-item modified dt-updated"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M400 64h-48V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H160V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H48C21.49 64 0 85.49 0 112v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm-6 400H54a6 6 0 0 1-6-6V160h352v298a6 6 0 0 1-6 6zm-52.849-200.65L198.842 404.519c-4.705 4.667-12.303 4.637-16.971-.068l-75.091-75.699c-4.667-4.705-4.637-12.303.068-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l44.104 44.461 111.072-110.181c4.705-4.667 12.303-4.637 16.971.068l22.536 22.718c4.667 4.705 4.636 12.303-.069 16.97z"/></svg>&nbsp;2022.9.30</time>
+        <time datetime="2022-09-30T21:09:48&#43;08:00" class="post-meta-item modified dt-updated"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M400 64h-48V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H160V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H48C21.49 64 0 85.49 0 112v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm-6 400H54a6 6 0 0 1-6-6V160h352v298a6 6 0 0 1-6 6zm-52.849-200.65L198.842 404.519c-4.705 4.667-12.303 4.637-16.971-.068l-75.091-75.699c-4.667-4.705-4.637-12.303.068-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l44.104 44.461 111.072-110.181c4.705-4.667 12.303-4.637 16.971.068l22.536 22.718c4.667 4.705 4.636 12.303-.069 16.97z"/></svg>&nbsp;2022.9.30</time>
     
     
     
@@ -531,7 +531,16 @@ DNS 支持的 IP 列表有限制。我们知道 DNS 使用 UDP 报文进行信�
 
 
 
-            
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<span id="busuanzi_container_site_pv">
+    本站访问量：<span id="busuanzi_value_site_pv"></span>次
+</span>
+&nbsp;
+<span id="busuanzi_container_site_uv">
+    您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+     <a href="#">
+</span>
         </div>
     </footer>
 
