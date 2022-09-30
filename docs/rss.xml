@@ -21,9 +21,9 @@
             <webMaster>neteric@126.com (neteric)</webMaster>
         
         
-            <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
+            <copyright>[蜀ICP备2022023345号](http://beian.miit.gov.cn/)</copyright>
         
-        <lastBuildDate>Fri, 19 Aug 2022 16:24:15 &#43;0800</lastBuildDate>
+        <lastBuildDate>Fri, 30 Sep 2022 17:07:05 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://neteric.github.io/rss.xml" />
         
@@ -36,7 +36,7 @@
                 
                     <author>neteric@126.com (neteric)</author>
                 
-                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
+                <copyright>[蜀ICP备2022023345号](http://beian.miit.gov.cn/)</copyright>
                 
                     <description>&lt;h2 id=&#34;一背景&#34;&gt;一、背景&lt;/h2&gt;
 &lt;h3 id=&#34;1-硬盘结构&#34;&gt;1. 硬盘结构&lt;/h3&gt;
@@ -632,7 +632,7 @@ B树相对平衡二叉树在节点空间的利用率上进行改进，B树在每
                 
                     <author>neteric@126.com (neteric)</author>
                 
-                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
+                <copyright>[蜀ICP备2022023345号](http://beian.miit.gov.cn/)</copyright>
                 
                     <description>&lt;h3 id=&#34;为何需要负载均衡&#34;&gt;为何需要负载均衡？&lt;/h3&gt;
 &lt;p&gt;业务初期，我们一般会先使用单台服务器对外提供服务。随着业务流量越来越大，单台服务器无论如何优化，无论采用多好的硬件，总会有性能天花板，当单服务器的性能无法满足业务，自然就想到把多台服务器组成集群来提高请求处理能力。集群必须要以统一的入口方式对外提供服务，所以需要一个 &lt;strong&gt;流量调度器&lt;/strong&gt; ，通过均衡的算法将用户大量的请求均衡地分发到后端集群不同的服务器上&lt;/p&gt;
