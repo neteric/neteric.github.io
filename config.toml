@@ -851,9 +851,9 @@ uglyURLs = false
     #       `toc` in post’s Front Matter
     #       has a higher priority than here
 
-    displayTOCTitle = false
+    displayTOCTitle = true
 
-    displayTOCNum = false
+    displayTOCNum = true
     # Note: *global settings*
     #       `tocNum` in post’s Front Matter
     #       has a higher priority than here
@@ -1021,7 +1021,7 @@ uglyURLs = false
     ######################################
     ## Font Size (unit: px)
 
-    fontSize = 18
+    fontSize = 16
 
     ######################################
     ## Tab Size
@@ -1062,7 +1062,7 @@ uglyURLs = false
     ######################################
     ## Drop Cap
 
-    enableDropCap = true
+    enableDropCap = false
     # Note: *global settings*
     #       `dropCap` in post’s Front Matter
     #       has a higher priority than here
