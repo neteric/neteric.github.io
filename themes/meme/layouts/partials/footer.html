@@ -8,7 +8,7 @@
               {{- if .Site.Params.displayCopyrightSymbol -}}
                   ©&nbsp;
               {{- end -}}
-
+              {{partial "components/socials.html" . }}
               {{- if .Site.Params.displaySiteCreatedYear -}}
                   {{- dateFormat "2006" (time .Site.Params.siteCreatedTime) -}}–
               {{- end -}}
@@ -26,11 +26,6 @@
             {{- if .Site.Params.displayPoweredBy }}
                 {{- $raw := `Powered by [Hugo](https://github.com/gohugoio/hugo) | Theme is [MemE](https://github.com/reuixiy/hugo-theme-meme)` -}}
                 <div class="powered-by">{{ partial "utils/markdownify.html" (dict "$" $ "raw" $raw "isContent" false) }}</div>
-            {{- end }}
-
-            {{- if .Site.Params.displaySiteCopyright }}
-                {{- $raw := .Site.Copyright -}}
-                <div class="site-copyright">{{ partial "utils/markdownify.html" (dict "$" $ "raw" $raw "isContent" false) }}</div>
             {{- end }}
 
             {{- with .Site.Params.customFooter }}
@@ -73,10 +68,13 @@
                     </span>
                 </div>
             {{- end }}
-
-            {{ partial "components/socials.html" . }}
-
             {{ partial "custom/footer.html" . }}
+
+            {{- if .Site.Params.displaySiteCopyright }}
+            {{- $raw := .Site.Copyright -}}
+            <hr>
+            <div class="site-copyright">{{ partial "utils/markdownify.html" (dict "$" $ "raw" $raw "isContent" false) }}</div>
+            {{- end }}
         </div>
     </footer>
 {{ end }}

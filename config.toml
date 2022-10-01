@@ -494,7 +494,7 @@ uglyURLs = false
     #       name of the folder under the
     #       site’s `content` directory.
 
-    mainSections = ["posts"]
+    mainSections = ["posts",""]
 
 
     ######################################
@@ -686,7 +686,7 @@ uglyURLs = false
     ## Utterances
     enableUtterances = true
     utterancesRepo = "neteric/neteric.github.io"
-    utterancesIssueTerm = "title"
+    utterancesIssueTerm = "url"
     utterancesTheme = "github-light"
     utterancesThemeDark = "photon-dark"
     utterancesLabel = ""
@@ -1284,10 +1284,10 @@ uglyURLs = false
     # Custom Footer (Markdown supported)
     customFooter = ""
 
-    displayBusuanziSiteUVAndPV = false
-    busuanziSiteUVText = "Site UV"
+    displayBusuanziSiteUVAndPV = true
+    busuanziSiteUVText = ""
     busuanziSiteUVIcon = "user"
-    busuanziSitePVText = "Site PV"
+    busuanziSitePVText = ""
     busuanziSitePVIcon = "eye"
     # Note: render only in production
     #       environment
