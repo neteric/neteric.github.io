@@ -6,7 +6,7 @@ title = "neteric"
 languageCode = "en"
 hasCJKLanguage = false
 # Copyright information (Markdown supported)
-copyright = "[蜀ICP备2022023345号](http://beian.miit.gov.cn/)"
+copyright = "[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)"
 publishDir = "docs"
 
 # Name of theme

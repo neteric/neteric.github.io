@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">neteric&#39;s blog, record work and life</subtitle>
-    <updated>2022-10-02T20:37:46&#43;08:00</updated>
+    <updated>2022-10-11T14:34:50&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -14,20 +14,20 @@
             
                 <email>neteric@126.com</email>
             </author>
-    <rights>[蜀ICP备2022023345号](http://beian.miit.gov.cn/)</rights>
+    <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights>
     <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
         <entry>
             <title type="text">存储引擎对比</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/storage-engine-compare/" />
             <id>https://neteric.github.io/posts/storage-engine-compare/</id>
-            <updated>2022-10-02T00:45:29&#43;08:00</updated>
+            <updated>2022-10-11T14:34:23&#43;08:00</updated>
             <published>2022-08-18T16:10:03&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
                     <email>neteric@126.com</email>
                     </author>
-            <rights>[蜀ICP备2022023345号](http://beian.miit.gov.cn/)</rights><summary type="html">背景 硬盘结构 硬盘内部主要部件为磁盘盘片、传动手臂、读写磁头和主轴马达。实际数据都是写在盘片上，读写主要是通过传动手臂上的读写磁头来完成。实际运行时，主轴让磁盘盘片转动，然后传动手臂可伸展让读取头在盘片上进行读写操作。磁盘物理结构如下图所示：
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">背景 硬盘结构 硬盘内部主要部件为磁盘盘片、传动手臂、读写磁头和主轴马达。实际数据都是写在盘片上，读写主要是通过传动手臂上的读写磁头来完成。实际运行时，主轴让磁盘盘片转动，然后传动手臂可伸展让读取头在盘片上进行读写操作。磁盘物理结构如下图所示：
 由于单一盘片容量有限，一般硬盘都有两张以上的盘片，每个盘片有两面，都可记录信息，所以一张盘片对应着两个磁头。盘片被分为许多扇形的区域，每个区域叫一个扇区，硬盘中每个扇区的大小固定为512字节。盘片表面上以盘片中心为圆心，不同半径的同心圆称为磁道，不同盘片相同半径的磁道所组成的圆柱称为柱面。磁道与柱面都是表示不同半径的圆，在许多场合，磁道和柱面可以互换使用。磁盘盘片垂直视角如下图所示
 影响硬盘性能的因素 影响磁盘的关键因素是磁盘服务时间，即磁盘完成一个I/O请求所花费的时间，它由寻道时间、旋转延迟和数据传输时间三部分构成。
 寻道时间 Tseek是指将读写磁头移动至正确的磁道上所需要的时间。寻道时间越短，I/O操作越快，目前磁盘的平均寻道时间一般在3-15ms。
@@ -623,14 +623,14 @@ B树相对平衡二叉树在节点空间的利用率上进行改进，B树在每
             <title type="text">关于负载均衡</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/about_load_balance/" />
             <id>https://neteric.github.io/posts/about_load_balance/</id>
-            <updated>2022-10-02T00:06:13&#43;08:00</updated>
+            <updated>2022-10-11T14:34:23&#43;08:00</updated>
             <published>2020-02-29T17:22:54&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
                     <email>neteric@126.com</email>
                     </author>
-            <rights>[蜀ICP备2022023345号](http://beian.miit.gov.cn/)</rights><summary type="html">为何需要负载均衡？ 业务初期，我们一般会先使用单台服务器对外提供服务。随着业务流量越来越大，单台服务器无论如何优化，无论采用多好的硬件，总会有性能天花板，当单服务器的性能无法满足业务，自然就想到把多台服务器组成集群来提高请求处理能力。集群必须要以统一的入口方式对外提供服务，所以需要一个 流量调度器 ，通过均衡的算法将用户大量的请求均衡地分发到后端集群不同的服务器上
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">为何需要负载均衡？ 业务初期，我们一般会先使用单台服务器对外提供服务。随着业务流量越来越大，单台服务器无论如何优化，无论采用多好的硬件，总会有性能天花板，当单服务器的性能无法满足业务，自然就想到把多台服务器组成集群来提高请求处理能力。集群必须要以统一的入口方式对外提供服务，所以需要一个 流量调度器 ，通过均衡的算法将用户大量的请求均衡地分发到后端集群不同的服务器上
 负载平衡（Load balancing）是一种计算机技术，用来在多个计算机（计算机集群）、网络连接、CPU、磁盘驱动器或其他资源中分配负载，以达到最优化资源使用、最大化吞吐率、最小化响应时间、同时避免过载的目的。 使用带有负载平衡的多个服务器组件，取代单一的组件，可以通过冗余提高可靠性。负载平衡服务通常是由专用软件和硬件来完成。 主要作用是将大量作业合理地分摊到多个操作单元上进行执行，用于解决互联网架构中的高并发和高可用的问题。
 使用负载均衡带来的好处：
 提高了系统的整体性能 提高了系统的扩展性 提高了系统的可靠性 负载均衡器从广义上可以分为 3 类：DNS 实现负载均衡、硬件负载均衡、软件负载均衡</summary>
