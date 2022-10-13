@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">neteric&#39;s blog, record work and life</subtitle>
-    <updated>2022-10-13T17:43:23&#43;08:00</updated>
+    <updated>2022-10-13T22:43:50&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -20,19 +20,99 @@
             <title type="text">扒一下ElasticSearch原理（一）</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_one/" />
             <id>https://neteric.github.io/posts/elasticsearch_principle_one/</id>
-            <updated>2022-10-13T17:43:21&#43;08:00</updated>
+            <updated>2022-10-13T22:43:43&#43;08:00</updated>
             <published>2022-10-02T10:21:24&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
                     <email>neteric@126.com</email>
                     </author>
-            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html"> 创建索引 </summary>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">📌 索引管理 创建所索引 创建名字为product的索引，并指定id为1的文档的内容
+1 2 3 4 PUT /product/_doc/1 { &amp;#34;name&amp;#34;: &amp;#34;computer&amp;#34; } 查看索引</summary>
             
-                <content type="html">&lt;ul&gt;
-&lt;li&gt;创建索引&lt;/li&gt;
+                <content type="html">&lt;h3 id=&#34;-索引管理&#34;&gt;📌 索引管理&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;创建所索引&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;images/elasticsearch_principle_one_pic_pic_1665653907115.png&#34; alt=&#34;picture 8&#34;&gt;&lt;/p&gt;
+&lt;p&gt;创建名字为&lt;code&gt;product&lt;/code&gt;的索引，并指定id为1的文档的内容&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PUT /product/_doc/1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;computer&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_create_index.png&#34; alt=&#34;create_index&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;查看索引&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;批量索引文档&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在源码中找到测试数据并下载&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl https://github.com/elastic/elasticsearch/blob/v6.8.19/docs/src/test/resources/accounts.json
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将下载到的accounts.json文件批量导入到EleasticSearch中&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -H &amp;#34;Content-Type: application/json&amp;#34; -XPOST &amp;#34;username:password@localhost:9200/bank/_bulk?pretty&amp;amp;refresh&amp;#34; --data-binary &amp;#34;@./accounts.json&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;-数据查询&#34;&gt;📌 数据查询&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;查询所有&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;查询index名为bank的数据，&lt;code&gt;match_all&lt;/code&gt;表示查询所有的数据，&lt;code&gt;sort&lt;/code&gt;即按照什么字段排序&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;GET /bank/_search
+{
+  &amp;#34;query&amp;#34;: { &amp;#34;match_all&amp;#34;: {} },
+  &amp;#34;sort&amp;#34;: [
+    { &amp;#34;account_number&amp;#34;: &amp;#34;desc&amp;#34; }
+  ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;查询结果如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_bank_search_all.png&#34; alt=&#34;picture 23&#34;&gt;&lt;/p&gt;
+&lt;p&gt;相关字段解释：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  - took – Elasticsearch运行查询所花费的时间（以毫秒为单位） 
+  - timed_out –搜索请求是否超时 
+  - _shards - 搜索了多少个分片，成功、失败或跳过了多少个分片
+  - max_score – 找到的最相关文档的分数 
+  - hits.total.value - 找到了多少个匹配的文档 
+  - hits._score - 文档的相关性得分（使用match_all时不适用）
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;分页查询&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;从第&lt;code&gt;3&lt;/code&gt;页记录开始查询，每页&lt;code&gt;5&lt;/code&gt;条数据,与Sql语句中的offset和limit类似&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;GET /bank/_search
+{
+  &amp;#34;query&amp;#34;: { &amp;#34;match_all&amp;#34;: {} },
+  &amp;#34;sort&amp;#34;: [
+    { &amp;#34;account_number&amp;#34;: &amp;#34;asc&amp;#34; }
+  ],
+  &amp;#34;from&amp;#34;: 10,
+  &amp;#34;size&amp;#34;: 5
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;指定字段查询&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;GET /bank/_search
+{
+  &amp;#34;query&amp;#34;: { &amp;#34;match&amp;#34;: { &amp;#34;address&amp;#34;: &amp;#34;mill lane&amp;#34; } }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;多条件查询&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_search_by_field.png&#34; alt=&#34;picture 24&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;聚合查询（Aggregation）&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在SQL中有group by，在ES中它叫Aggregation，即聚合运算&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 </content>
             
             
