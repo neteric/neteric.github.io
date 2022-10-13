@@ -771,7 +771,7 @@ uglyURLs = false
     #            supported
 
     # The content width of the post
-    postWidth = 54
+    postWidth = 60
     # Note: you can leave it empty("") to
     #       fallback to the default value: 42
     #       Unit: em

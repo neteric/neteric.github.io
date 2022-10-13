@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">neteric&#39;s blog, record work and life</subtitle>
-    <updated>2022-10-13T22:43:50&#43;08:00</updated>
+    <updated>2022-10-13T22:52:40&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -17,52 +17,75 @@
     <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights>
     <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
         <entry>
-            <title type="text">扒一下ElasticSearch原理（一）</title>
-            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_one/" />
-            <id>https://neteric.github.io/posts/elasticsearch_principle_one/</id>
-            <updated>2022-10-13T22:43:43&#43;08:00</updated>
-            <published>2022-10-02T10:21:24&#43;08:00</published>
+            <title type="text">扒一下ElasticSearch原理（三）| 分布式特性</title>
+            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_three/" />
+            <id>https://neteric.github.io/posts/elasticsearch_principle_three/</id>
+            <updated>2022-10-13T22:52:04&#43;08:00</updated>
+            <published>2022-10-04T10:21:24&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
                     <email>neteric@126.com</email>
                     </author>
-            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">📌 索引管理 创建所索引 创建名字为product的索引，并指定id为1的文档的内容
-1 2 3 4 PUT /product/_doc/1 { &amp;#34;name&amp;#34;: &amp;#34;computer&amp;#34; } 查看索引</summary>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html"></summary>
             
-                <content type="html">&lt;h3 id=&#34;-索引管理&#34;&gt;📌 索引管理&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;创建所索引&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;创建名字为&lt;code&gt;product&lt;/code&gt;的索引，并指定id为1的文档的内容&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PUT /product/_doc/1
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;computer&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_create_index.png&#34; alt=&#34;create_index&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;查看索引&lt;/strong&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;批量索引文档&lt;/strong&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;在源码中找到测试数据并下载&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl https://github.com/elastic/elasticsearch/blob/v6.8.19/docs/src/test/resources/accounts.json
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将下载到的accounts.json文件批量导入到EleasticSearch中&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -H &amp;#34;Content-Type: application/json&amp;#34; -XPOST &amp;#34;username:password@localhost:9200/bank/_bulk?pretty&amp;amp;refresh&amp;#34; --data-binary &amp;#34;@./accounts.json&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;-数据查询&#34;&gt;📌 数据查询&lt;/h3&gt;
+                <content type="html"></content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/categories/distribute-storge/" term="distribute storge" label="distribute storge" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/elasticsearch/" term="elasticsearch" label="elasticsearch" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/distribte-storage/" term="distribte storage" label="distribte storage" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/storage/" term="storage" label="storage" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">扒一下ElasticSearch原理（二）| 数据查询</title>
+            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_two/" />
+            <id>https://neteric.github.io/posts/elasticsearch_principle_two/</id>
+            <updated>2022-10-13T22:52:32&#43;08:00</updated>
+            <published>2022-10-03T10:21:24&#43;08:00</published>
+            <author>
+                    <name>neteric</name>
+                    <uri>https://blog.neteric.top/</uri>
+                    <email>neteric@126.com</email>
+                    </author>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">📌 数据查询 查询所有 查询index名为bank的数据，match_all表示查询所有的数据，sort即按照什么字段排序
+GET /bank/_search { &amp;#34;query&amp;#34;: { &amp;#34;match_all&amp;#34;: {} }, &amp;#34;sort&amp;#34;: [ { &amp;#34;account_number&amp;#34;: &amp;#34;desc&amp;#34; } ] } 查询结果如下：</summary>
+            
+                <content type="html">&lt;h3 id=&#34;-数据查询&#34;&gt;📌 数据查询&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;查询所有&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
@@ -125,7 +148,95 @@
                             
                             
                             
-                                <category scheme="https://neteric.github.io/categories/distribute/" term="distribute" label="distribute" />
+                                <category scheme="https://neteric.github.io/categories/distribute-storge/" term="distribute storge" label="distribute storge" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/elasticsearch/" term="elasticsearch" label="elasticsearch" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/distribte-storage/" term="distribte storage" label="distribte storage" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/storage/" term="storage" label="storage" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">扒一下ElasticSearch原理（一）| 索引管理</title>
+            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_one/" />
+            <id>https://neteric.github.io/posts/elasticsearch_principle_one/</id>
+            <updated>2022-10-13T22:50:16&#43;08:00</updated>
+            <published>2022-10-02T10:21:24&#43;08:00</published>
+            <author>
+                    <name>neteric</name>
+                    <uri>https://blog.neteric.top/</uri>
+                    <email>neteric@126.com</email>
+                    </author>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">📌 索引管理 创建所索引 创建名字为product的索引，并指定id为1的文档的内容
+1 2 3 4 PUT /product/_doc/1 { &amp;#34;name&amp;#34;: &amp;#34;computer&amp;#34; } 查看索引</summary>
+            
+                <content type="html">&lt;h3 id=&#34;-索引管理&#34;&gt;📌 索引管理&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;创建所索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;创建名字为&lt;code&gt;product&lt;/code&gt;的索引，并指定id为1的文档的内容&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PUT /product/_doc/1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;computer&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_create_index.png&#34; alt=&#34;create_index&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;查看索引&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;批量索引文档&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在源码中找到测试数据并下载&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl https://github.com/elastic/elasticsearch/blob/v6.8.19/docs/src/test/resources/accounts.json
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将下载到的accounts.json文件批量导入到EleasticSearch中&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -H &amp;#34;Content-Type: application/json&amp;#34; -XPOST &amp;#34;username:password@localhost:9200/bank/_bulk?pretty&amp;amp;refresh&amp;#34; --data-binary &amp;#34;@./accounts.json&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/categories/distribute-storge/" term="distribute storge" label="distribute storge" />
                             
                         
                     
