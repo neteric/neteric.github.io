@@ -1,7 +1,7 @@
 <main class="main single" id="main">
     {{ $enableTOC := .Params.toc | default .Site.Params.enableTOC -}}
     {{- if $enableTOC -}}
-    {{- partial "utils/toc.html" . -}}
+    {{- partial "toc.html" . -}}
     {{- end -}}
     <div class="main-inner">
 
