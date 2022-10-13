@@ -23,10 +23,66 @@
         
             <copyright>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</copyright>
         
-        <lastBuildDate>Tue, 11 Oct 2022 14:34:50 &#43;0800</lastBuildDate>
+        <lastBuildDate>Thu, 13 Oct 2022 17:43:23 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://neteric.github.io/rss.xml" />
         
+        
+            <item>
+                <title>扒一下ElasticSearch原理（一）</title>
+                <link>https://neteric.github.io/posts/elasticsearch_principle_one/</link>
+                <guid isPermaLink="true">https://neteric.github.io/posts/elasticsearch_principle_one/</guid>
+                <pubDate>Sun, 02 Oct 2022 10:21:24 &#43;0800</pubDate>
+                
+                    <author>neteric@126.com (neteric)</author>
+                
+                <copyright>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</copyright>
+                
+                    <description>&lt;ul&gt;
+&lt;li&gt;创建索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;images/elasticsearch_principle_one_pic_pic_1665653907115.png&#34; alt=&#34;picture 8&#34;&gt;&lt;/p&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/categories/distribute/">distribute</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/elasticsearch/">elasticsearch</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/distribte-storage/">distribte storage</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.github.io/tags/storage/">storage</category>
+                                
+                            
+                        
+                    
+                
+            </item>
         
             <item>
                 <title>存储引擎对比</title>

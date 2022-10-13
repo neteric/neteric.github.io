@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">neteric&#39;s blog, record work and life</subtitle>
-    <updated>2022-10-11T14:34:50&#43;08:00</updated>
+    <updated>2022-10-13T17:43:23&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -16,6 +16,65 @@
             </author>
     <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights>
     <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
+        <entry>
+            <title type="text">扒一下ElasticSearch原理（一）</title>
+            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_one/" />
+            <id>https://neteric.github.io/posts/elasticsearch_principle_one/</id>
+            <updated>2022-10-13T17:43:21&#43;08:00</updated>
+            <published>2022-10-02T10:21:24&#43;08:00</published>
+            <author>
+                    <name>neteric</name>
+                    <uri>https://blog.neteric.top/</uri>
+                    <email>neteric@126.com</email>
+                    </author>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html"> 创建索引 </summary>
+            
+                <content type="html">&lt;ul&gt;
+&lt;li&gt;创建索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;images/elasticsearch_principle_one_pic_pic_1665653907115.png&#34; alt=&#34;picture 8&#34;&gt;&lt;/p&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/categories/distribute/" term="distribute" label="distribute" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/elasticsearch/" term="elasticsearch" label="elasticsearch" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/distribte-storage/" term="distribte storage" label="distribte storage" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/storage/" term="storage" label="storage" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
         <entry>
             <title type="text">存储引擎对比</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/storage-engine-compare/" />
