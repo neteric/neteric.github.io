@@ -112,6 +112,7 @@ $brandHeight: null;
     top: 80px;
     margin: 0 20px 0 0;
 }
+
 .toc {
     margin: 0 2px 40px 2px;
     border: 1px solid var(--border);
@@ -192,10 +193,10 @@ $brandHeight: null;
 
 .toc li {
     list-style: none;
-    font-size: 0.55rem;
+    font-size: 0.75rem;
     padding-bottom: 5px;
 }
 
-.toc li a:hover {
-    color: var(--secondary);
-}
+// .toc li a:hover {
+//     color: var(--secondary);
+// }

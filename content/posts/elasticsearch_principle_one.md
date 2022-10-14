@@ -11,8 +11,11 @@ tags:
 categories: ["distribute storge"]
 ---
 
-### :pushpin: 索引管理
-- 创建所索引
+## 索引管理 :pushpin:
+
+### 索引介绍
+
+### 创建索引
   
 创建名字为`product`的索引，并指定id为1的文档的内容
 
@@ -25,10 +28,15 @@ PUT /product/_doc/1
 
 ![create_index](/images/elasticsearch_principle_one_create_index.png)  
 
--  **查看索引**
+### 修改索引
 
+### 打开/关闭索引
 
-- **批量索引文档**
+### 删除索引
+
+### 查看索引
+
+### 批量索引文档
 
 在源码中找到测试数据并下载
 

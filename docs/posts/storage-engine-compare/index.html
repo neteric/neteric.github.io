@@ -17,7 +17,7 @@
 
     <title>存储引擎对比 | neteric</title>
 
-    <link rel="stylesheet" href="/css/meme.min.5d1b283de8025692c62ea22c935fe689851bd3ffa51d66a0aa59e6025726e6c1.css"/>
+    <link rel="stylesheet" href="/css/meme.min.961cd8057cf985d91b50414ca090fd077d5f84a06ce5d7411bf18e46c24c6135.css"/>
 
     
     
@@ -211,84 +211,178 @@
             
             
     <main class="main single" id="main">
-    <nav class="contents">
-  <h2 id="contents" class="contents-title">Contents</h2><ol class="toc">
-    <li><a id="contents:背景" href="#背景">背景</a>
-      <ol>
-        <li><a id="contents:硬盘结构" href="#硬盘结构">硬盘结构</a></li>
-        <li><a id="contents:影响硬盘性能的因素" href="#影响硬盘性能的因素">影响硬盘性能的因素</a></li>
-        <li><a id="contents:linux-io流程" href="#linux-io流程">Linux IO流程</a></li>
-        <li><a id="contents:存储分类" href="#存储分类">存储分类</a>
-          <ol>
-            <li><a id="contents:结构化数据" href="#结构化数据">结构化数据</a>
-              <ol>
-                <li><a id="contents:结构化数据的存储" href="#结构化数据的存储">结构化数据的存储</a></li>
-              </ol>
-            </li>
-            <li><a id="contents:半结构化数据" href="#半结构化数据">半结构化数据</a>
-              <ol>
-                <li><a id="contents:半结构化数据的存储" href="#半结构化数据的存储">半结构化数据的存储</a></li>
-              </ol>
-            </li>
-            <li><a id="contents:非结构化数据" href="#非结构化数据">非结构化数据</a>
-              <ol>
-                <li><a id="contents:非结构化数据的存储" href="#非结构化数据的存储">非结构化数据的存储</a></li>
-              </ol>
-            </li>
-          </ol>
-        </li>
-        <li><a id="contents:存储使用场景" href="#存储使用场景">存储使用场景</a></li>
-      </ol>
-    </li>
-    <li><a id="contents:lsm-tree的起源" href="#lsm-tree的起源">LSM Tree的起源</a>
-      <ol>
-        <li><a id="contents:世界上最简单的数据库" href="#世界上最简单的数据库">世界上最简单的数据库</a></li>
-        <li><a id="contents:引入哈希索引" href="#引入哈希索引">引入哈希索引</a></li>
-        <li><a id="contents:3-sstable" href="#3-sstable">3. SSTable</a>
-          <ol>
-            <li><a id="contents:构建和维护-sstables" href="#构建和维护-sstables">构建和维护 SSTables</a></li>
-          </ol>
-        </li>
-        <li><a id="contents:从-sstables-到-lsm-tree" href="#从-sstables-到-lsm-tree">从 SSTables 到 LSM-Tree</a>
-          <ol>
-            <li>
-              <ol>
-                <li><a id="contents:lsm-tree的性能优化" href="#lsm-tree的性能优化">LSM-Tree的性能优化</a></li>
-              </ol>
-            </li>
-          </ol>
-        </li>
-      </ol>
-    </li>
-    <li><a id="contents:另一个世界-b-族树" href="#另一个世界-b-族树">另一个世界-B 族树</a>
-      <ol>
-        <li><a id="contents:起源-顺序存储的scheme" href="#起源-顺序存储的scheme">起源-顺序存储的Scheme</a></li>
-        <li><a id="contents:二叉查找树" href="#二叉查找树">二叉查找树</a></li>
-        <li><a id="contents:平衡二叉查找树" href="#平衡二叉查找树">平衡二叉查找树</a></li>
-        <li><a id="contents:b-树" href="#b-树">B 树</a></li>
-        <li><a id="contents:b-树-1" href="#b-树-1">B+ 树</a></li>
-        <li><a id="contents:b树优化" href="#b树优化">B+树优化</a></li>
-      </ol>
-    </li>
-    <li><a id="contents:b-trees-和-lsm-trees-对比" href="#b-trees-和-lsm-trees-对比">B-Trees 和 LSM-Trees 对比</a></li>
-    <li><a id="contents:存储引擎的其他应用" href="#存储引擎的其他应用">存储引擎的其他应用</a>
-      <ol>
-        <li><a id="contents:全文索引和模糊索引" href="#全文索引和模糊索引"><strong>全文索引和模糊索引</strong></a></li>
-        <li><a id="contents:全内存数据结构" href="#全内存数据结构">全内存数据结构</a></li>
-        <li><a id="contents:列存" href="#列存">列存</a>
-          <ol>
-            <li><a id="contents:列压缩" href="#列压缩">列压缩</a></li>
-            <li><a id="contents:内存带宽和向量化处理" href="#内存带宽和向量化处理">内存带宽和向量化处理</a></li>
-            <li><a id="contents:列式存储的排序" href="#列式存储的排序">列式存储的排序</a></li>
-            <li><a id="contents:不同副本不同排序" href="#不同副本不同排序">不同副本，不同排序</a></li>
-            <li><a id="contents:列式存储的写入" href="#列式存储的写入">列式存储的写入</a></li>
-          </ol>
-        </li>
-      </ol>
-    </li>
-    <li><a id="contents:总结" href="#总结">总结</a></li>
-  </ol>
-</nav><div class="main-inner">
+    <aside id="toc-container" class="toc-container wide">
+        <div class="toc">
+            <details >
+                <summary accesskey="c" title="(Alt + C)">
+                    <span class="details">Table of Contents</span>
+                </summary>
+
+                <div class="inner"><ul>
+                        <li>
+                            <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a><ul>
+                                    
+                        <li>
+                            <a href="#%e7%a1%ac%e7%9b%98%e7%bb%93%e6%9e%84" aria-label="硬盘结构">硬盘结构</a></li>
+                        <li>
+                            <a href="#%e5%bd%b1%e5%93%8d%e7%a1%ac%e7%9b%98%e6%80%a7%e8%83%bd%e7%9a%84%e5%9b%a0%e7%b4%a0" aria-label="影响硬盘性能的因素">影响硬盘性能的因素</a></li>
+                        <li>
+                            <a href="#linux-io%e6%b5%81%e7%a8%8b" aria-label="Linux IO流程">Linux IO流程</a></li>
+                        <li>
+                            <a href="#%e5%ad%98%e5%82%a8%e5%88%86%e7%b1%bb" aria-label="存储分类">存储分类</a><ul>
+                                    
+                        <li>
+                            <a href="#%e7%bb%93%e6%9e%84%e5%8c%96%e6%95%b0%e6%8d%ae" aria-label="结构化数据">结构化数据</a><ul>
+                                    
+                        <li>
+                            <a href="#%e7%bb%93%e6%9e%84%e5%8c%96%e6%95%b0%e6%8d%ae%e7%9a%84%e5%ad%98%e5%82%a8" aria-label="结构化数据的存储">结构化数据的存储</a></li></ul>
+                        </li>
+                        <li>
+                            <a href="#%e5%8d%8a%e7%bb%93%e6%9e%84%e5%8c%96%e6%95%b0%e6%8d%ae" aria-label="半结构化数据">半结构化数据</a><ul>
+                                    
+                        <li>
+                            <a href="#%e5%8d%8a%e7%bb%93%e6%9e%84%e5%8c%96%e6%95%b0%e6%8d%ae%e7%9a%84%e5%ad%98%e5%82%a8" aria-label="半结构化数据的存储">半结构化数据的存储</a></li></ul>
+                        </li>
+                        <li>
+                            <a href="#%e9%9d%9e%e7%bb%93%e6%9e%84%e5%8c%96%e6%95%b0%e6%8d%ae" aria-label="非结构化数据">非结构化数据</a><ul>
+                                    
+                        <li>
+                            <a href="#%e9%9d%9e%e7%bb%93%e6%9e%84%e5%8c%96%e6%95%b0%e6%8d%ae%e7%9a%84%e5%ad%98%e5%82%a8" aria-label="非结构化数据的存储">非结构化数据的存储</a></li></ul>
+                        </li></ul>
+                        </li>
+                        <li>
+                            <a href="#%e5%ad%98%e5%82%a8%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af" aria-label="存储使用场景">存储使用场景</a></li></ul>
+                        </li>
+                        <li>
+                            <a href="#lsm-tree%e7%9a%84%e8%b5%b7%e6%ba%90" aria-label="LSM Tree的起源">LSM Tree的起源</a><ul>
+                                    
+                        <li>
+                            <a href="#%e4%b8%96%e7%95%8c%e4%b8%8a%e6%9c%80%e7%ae%80%e5%8d%95%e7%9a%84%e6%95%b0%e6%8d%ae%e5%ba%93" aria-label="世界上最简单的数据库">世界上最简单的数据库</a></li>
+                        <li>
+                            <a href="#%e5%bc%95%e5%85%a5%e5%93%88%e5%b8%8c%e7%b4%a2%e5%bc%95" aria-label="引入哈希索引">引入哈希索引</a></li>
+                        <li>
+                            <a href="#3-sstable" aria-label="3. SSTable">3. SSTable</a><ul>
+                                    
+                        <li>
+                            <a href="#%e6%9e%84%e5%bb%ba%e5%92%8c%e7%bb%b4%e6%8a%a4-sstables" aria-label="构建和维护 SSTables">构建和维护 SSTables</a></li></ul>
+                        </li>
+                        <li>
+                            <a href="#%e4%bb%8e-sstables-%e5%88%b0-lsm-tree" aria-label="从 SSTables 到 LSM-Tree">从 SSTables 到 LSM-Tree</a><ul>
+                                    <ul>
+                                    
+                        <li>
+                            <a href="#lsm-tree%e7%9a%84%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96" aria-label="LSM-Tree的性能优化">LSM-Tree的性能优化</a></li></ul>
+                                </ul>
+                        </li></ul>
+                        </li>
+                        <li>
+                            <a href="#%e5%8f%a6%e4%b8%80%e4%b8%aa%e4%b8%96%e7%95%8c-b-%e6%97%8f%e6%a0%91" aria-label="另一个世界-B 族树">另一个世界-B 族树</a><ul>
+                                    
+                        <li>
+                            <a href="#%e8%b5%b7%e6%ba%90-%e9%a1%ba%e5%ba%8f%e5%ad%98%e5%82%a8%e7%9a%84scheme" aria-label="起源-顺序存储的Scheme">起源-顺序存储的Scheme</a></li>
+                        <li>
+                            <a href="#%e4%ba%8c%e5%8f%89%e6%9f%a5%e6%89%be%e6%a0%91" aria-label="二叉查找树">二叉查找树</a></li>
+                        <li>
+                            <a href="#%e5%b9%b3%e8%a1%a1%e4%ba%8c%e5%8f%89%e6%9f%a5%e6%89%be%e6%a0%91" aria-label="平衡二叉查找树">平衡二叉查找树</a></li>
+                        <li>
+                            <a href="#b-%e6%a0%91" aria-label="B 树">B 树</a></li>
+                        <li>
+                            <a href="#b-%e6%a0%91-1" aria-label="B&#43; 树">B+ 树</a></li>
+                        <li>
+                            <a href="#b%e6%a0%91%e4%bc%98%e5%8c%96" aria-label="B&#43;树优化">B+树优化</a></li></ul>
+                        </li>
+                        <li>
+                            <a href="#b-trees-%e5%92%8c-lsm-trees-%e5%af%b9%e6%af%94" aria-label="B-Trees 和 LSM-Trees 对比">B-Trees 和 LSM-Trees 对比</a></li>
+                        <li>
+                            <a href="#%e5%ad%98%e5%82%a8%e5%bc%95%e6%93%8e%e7%9a%84%e5%85%b6%e4%bb%96%e5%ba%94%e7%94%a8" aria-label="存储引擎的其他应用">存储引擎的其他应用</a><ul>
+                                    
+                        <li>
+                            <a href="#%e5%85%a8%e6%96%87%e7%b4%a2%e5%bc%95%e5%92%8c%e6%a8%a1%e7%b3%8a%e7%b4%a2%e5%bc%95" aria-label="全文索引和模糊索引"><strong>全文索引和模糊索引</strong></a></li>
+                        <li>
+                            <a href="#%e5%85%a8%e5%86%85%e5%ad%98%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84" aria-label="全内存数据结构">全内存数据结构</a></li>
+                        <li>
+                            <a href="#%e5%88%97%e5%ad%98" aria-label="列存">列存</a><ul>
+                                    
+                        <li>
+                            <a href="#%e5%88%97%e5%8e%8b%e7%bc%a9" aria-label="列压缩">列压缩</a></li>
+                        <li>
+                            <a href="#%e5%86%85%e5%ad%98%e5%b8%a6%e5%ae%bd%e5%92%8c%e5%90%91%e9%87%8f%e5%8c%96%e5%a4%84%e7%90%86" aria-label="内存带宽和向量化处理">内存带宽和向量化处理</a></li>
+                        <li>
+                            <a href="#%e5%88%97%e5%bc%8f%e5%ad%98%e5%82%a8%e7%9a%84%e6%8e%92%e5%ba%8f" aria-label="列式存储的排序">列式存储的排序</a></li>
+                        <li>
+                            <a href="#%e4%b8%8d%e5%90%8c%e5%89%af%e6%9c%ac%e4%b8%8d%e5%90%8c%e6%8e%92%e5%ba%8f" aria-label="不同副本，不同排序">不同副本，不同排序</a></li>
+                        <li>
+                            <a href="#%e5%88%97%e5%bc%8f%e5%ad%98%e5%82%a8%e7%9a%84%e5%86%99%e5%85%a5" aria-label="列式存储的写入">列式存储的写入</a></li></ul>
+                        </li></ul>
+                        </li>
+                        <li>
+                            <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                        </li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </aside>
+    <script>
+        let activeElement;
+        let elements;
+        window.addEventListener('DOMContentLoaded', function (event) {
+            checkTocPosition();
+
+            elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+            
+            activeElement = elements[0];
+            const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+            document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+        }, false);
+
+        window.addEventListener('resize', function (event) {
+            checkTocPosition();
+        }, false);
+
+        window.addEventListener('scroll', () => {
+            
+            activeElement = Array.from(elements).find((element) => {
+                if ((getOffsetTop(element) - window.pageYOffset) > 0 &&
+                    (getOffsetTop(element) - window.pageYOffset) < window.innerHeight / 2) {
+                    return element;
+                }
+            }) || activeElement
+
+            elements.forEach(element => {
+                const id = encodeURI(element.getAttribute('id')).toLowerCase();
+                if (element === activeElement) {
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+                } else {
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+                }
+            })
+        }, false);
+
+        const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+        const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+        const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+        function checkTocPosition() {
+            const width = document.body.scrollWidth;
+
+            if (width - main - (toc * 2) - (gap * 4) > 0) {
+                document.getElementById("toc-container").classList.add("wide");
+            } else {
+                document.getElementById("toc-container").classList.remove("wide");
+            }
+        }
+
+        function getOffsetTop(element) {
+            if (!element.getClientRects().length) {
+                return 0;
+            }
+            let rect = element.getBoundingClientRect();
+            let win = element.ownerDocument.defaultView;
+            return rect.top + win.pageYOffset;
+        }
+    </script>
+<div class="main-inner">
 
         
 
