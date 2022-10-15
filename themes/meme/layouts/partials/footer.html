@@ -72,7 +72,11 @@
 
             {{- if .Site.Params.displaySiteCopyright }}
             {{- $raw := .Site.Copyright -}}
-            <hr>
+            <!-- <hr> -->
+                        <a href="https://gohugo.io/"><img src="https://img.shields.io/badge/Powered%20By-Hugo-blue" alt="hugowebsite"></a>
+                        <a href="https://github.com/reuixiy/hugo-theme-meme"><img src="https://img.shields.io/badge/Theme-MemE-brightgreen"
+                                alt="theme"></a>
+                        <a href="https://neteric.top"><img src="https://img.shields.io/badge/Design%20By-neteric-orange" alt="theme"></a>
             <div class="site-copyright">{{ partial "utils/markdownify.html" (dict "$" $ "raw" $raw "isContent" false) }}</div>
             {{- end }}
         </div>

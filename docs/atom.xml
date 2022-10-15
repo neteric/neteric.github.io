@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">neteric&#39;s blog, record work and life</subtitle>
-    <updated>2022-10-14T10:05:07&#43;08:00</updated>
+    <updated>2022-10-15T23:39:23&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -20,7 +20,7 @@
             <title type="text">扒一下ElasticSearch原理（三）| 分布式特性</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_three/" />
             <id>https://neteric.github.io/posts/elasticsearch_principle_three/</id>
-            <updated>2022-10-13T22:52:04&#43;08:00</updated>
+            <updated>2022-10-13T23:50:10&#43;08:00</updated>
             <published>2022-10-04T10:21:24&#43;08:00</published>
             <author>
                     <name>neteric</name>
@@ -75,7 +75,7 @@
             <title type="text">扒一下ElasticSearch原理（二）| 数据查询</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_two/" />
             <id>https://neteric.github.io/posts/elasticsearch_principle_two/</id>
-            <updated>2022-10-13T22:52:32&#43;08:00</updated>
+            <updated>2022-10-13T23:50:10&#43;08:00</updated>
             <published>2022-10-03T10:21:24&#43;08:00</published>
             <author>
                     <name>neteric</name>
@@ -182,20 +182,19 @@ GET /bank/_search { &amp;#34;query&amp;#34;: { &amp;#34;match_all&amp;#34;: {} }
             <title type="text">扒一下ElasticSearch原理（一）| 索引管理</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_one/" />
             <id>https://neteric.github.io/posts/elasticsearch_principle_one/</id>
-            <updated>2022-10-13T22:50:16&#43;08:00</updated>
+            <updated>2022-10-15T23:39:14&#43;08:00</updated>
             <published>2022-10-02T10:21:24&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
                     <email>neteric@126.com</email>
                     </author>
-            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">📌 索引管理 创建所索引 创建名字为product的索引，并指定id为1的文档的内容
-1 2 3 4 PUT /product/_doc/1 { &amp;#34;name&amp;#34;: &amp;#34;computer&amp;#34; } 查看索引</summary>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">索引管理 📌 索引介绍 创建索引 创建名字为product的索引，并指定id为1的文档的内容
+1 2 3 4 PUT /product/_doc/1 { &amp;#34;name&amp;#34;: &amp;#34;computer&amp;#34; } 修改索引 打开/关闭索引 删除索引 查看索引 批量索引文档 在源码中找到测试数据并下载</summary>
             
-                <content type="html">&lt;h3 id=&#34;-索引管理&#34;&gt;📌 索引管理&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;创建所索引&lt;/li&gt;
-&lt;/ul&gt;
+                <content type="html">&lt;h2 id=&#34;索引管理-&#34;&gt;索引管理 📌&lt;/h2&gt;
+&lt;h3 id=&#34;索引介绍&#34;&gt;索引介绍&lt;/h3&gt;
+&lt;h3 id=&#34;创建索引&#34;&gt;创建索引&lt;/h3&gt;
 &lt;p&gt;创建名字为&lt;code&gt;product&lt;/code&gt;的索引，并指定id为1的文档的内容&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -212,14 +211,11 @@ GET /bank/_search { &amp;#34;query&amp;#34;: { &amp;#34;match_all&amp;#34;: {} }
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_create_index.png&#34; alt=&#34;create_index&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;查看索引&lt;/strong&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;批量索引文档&lt;/strong&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
+&lt;h3 id=&#34;修改索引&#34;&gt;修改索引&lt;/h3&gt;
+&lt;h3 id=&#34;打开关闭索引&#34;&gt;打开/关闭索引&lt;/h3&gt;
+&lt;h3 id=&#34;删除索引&#34;&gt;删除索引&lt;/h3&gt;
+&lt;h3 id=&#34;查看索引&#34;&gt;查看索引&lt;/h3&gt;
+&lt;h3 id=&#34;批量索引文档&#34;&gt;批量索引文档&lt;/h3&gt;
 &lt;p&gt;在源码中找到测试数据并下载&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl https://github.com/elastic/elasticsearch/blob/v6.8.19/docs/src/test/resources/accounts.json
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将下载到的accounts.json文件批量导入到EleasticSearch中&lt;/p&gt;
@@ -270,7 +266,7 @@ GET /bank/_search { &amp;#34;query&amp;#34;: { &amp;#34;match_all&amp;#34;: {} }
             <title type="text">存储引擎对比</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/storage-engine-compare/" />
             <id>https://neteric.github.io/posts/storage-engine-compare/</id>
-            <updated>2022-10-11T14:34:23&#43;08:00</updated>
+            <updated>2022-10-02T00:45:29&#43;08:00</updated>
             <published>2022-08-18T16:10:03&#43;08:00</published>
             <author>
                     <name>neteric</name>
@@ -873,7 +869,7 @@ B树相对平衡二叉树在节点空间的利用率上进行改进，B树在每
             <title type="text">关于负载均衡</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/about_load_balance/" />
             <id>https://neteric.github.io/posts/about_load_balance/</id>
-            <updated>2022-10-11T14:34:23&#43;08:00</updated>
+            <updated>2022-10-02T00:06:13&#43;08:00</updated>
             <published>2020-02-29T17:22:54&#43;08:00</published>
             <author>
                     <name>neteric</name>

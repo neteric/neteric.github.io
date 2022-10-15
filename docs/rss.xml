@@ -23,7 +23,7 @@
         
             <copyright>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</copyright>
         
-        <lastBuildDate>Fri, 14 Oct 2022 10:05:07 &#43;0800</lastBuildDate>
+        <lastBuildDate>Sat, 15 Oct 2022 23:39:23 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://neteric.github.io/rss.xml" />
         
@@ -193,10 +193,9 @@
                 
                 <copyright>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</copyright>
                 
-                    <description>&lt;h3 id=&#34;-索引管理&#34;&gt;📌 索引管理&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;创建所索引&lt;/li&gt;
-&lt;/ul&gt;
+                    <description>&lt;h2 id=&#34;索引管理-&#34;&gt;索引管理 📌&lt;/h2&gt;
+&lt;h3 id=&#34;索引介绍&#34;&gt;索引介绍&lt;/h3&gt;
+&lt;h3 id=&#34;创建索引&#34;&gt;创建索引&lt;/h3&gt;
 &lt;p&gt;创建名字为&lt;code&gt;product&lt;/code&gt;的索引，并指定id为1的文档的内容&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -213,14 +212,11 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_create_index.png&#34; alt=&#34;create_index&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;查看索引&lt;/strong&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;批量索引文档&lt;/strong&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
+&lt;h3 id=&#34;修改索引&#34;&gt;修改索引&lt;/h3&gt;
+&lt;h3 id=&#34;打开关闭索引&#34;&gt;打开/关闭索引&lt;/h3&gt;
+&lt;h3 id=&#34;删除索引&#34;&gt;删除索引&lt;/h3&gt;
+&lt;h3 id=&#34;查看索引&#34;&gt;查看索引&lt;/h3&gt;
+&lt;h3 id=&#34;批量索引文档&#34;&gt;批量索引文档&lt;/h3&gt;
 &lt;p&gt;在源码中找到测试数据并下载&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl https://github.com/elastic/elasticsearch/blob/v6.8.19/docs/src/test/resources/accounts.json
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将下载到的accounts.json文件批量导入到EleasticSearch中&lt;/p&gt;
