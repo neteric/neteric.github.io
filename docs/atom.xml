@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title type="text">neteric</title>
     <subtitle type="html">neteric&#39;s blog, record work and life</subtitle>
-    <updated>2022-10-16T13:14:11&#43;08:00</updated>
+    <updated>2022-10-17T00:14:06&#43;08:00</updated>
     <id>https://neteric.github.io/</id>
     <link rel="alternate" type="text/html" href="https://neteric.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://neteric.github.io/atom.xml" />
@@ -17,11 +17,11 @@
     <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights>
     <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
         <entry>
-            <title type="text">扒一下ElasticSearch原理（三）| 分布式特性</title>
-            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_three/" />
-            <id>https://neteric.github.io/posts/elasticsearch_principle_three/</id>
-            <updated>2022-10-13T23:50:10&#43;08:00</updated>
-            <published>2022-10-04T10:21:24&#43;08:00</published>
+            <title type="text">捋一捋ElasticSearch（四）| Lucene存储引擎</title>
+            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_four/" />
+            <id>https://neteric.github.io/posts/elasticsearch_principle_four/</id>
+            <updated>2022-10-16T16:21:14&#43;08:00</updated>
+            <published>2022-10-05T10:21:24&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
@@ -72,19 +72,258 @@
         </entry>
     
         <entry>
-            <title type="text">扒一下ElasticSearch原理（二）| 数据查询</title>
+            <title type="text">捋一捋ElasticSearch（三）| 分布式特性</title>
+            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_three/" />
+            <id>https://neteric.github.io/posts/elasticsearch_principle_three/</id>
+            <updated>2022-10-17T00:13:20&#43;08:00</updated>
+            <published>2022-10-04T10:21:24&#43;08:00</published>
+            <author>
+                    <name>neteric</name>
+                    <uri>https://blog.neteric.top/</uri>
+                    <email>neteric@126.com</email>
+                    </author>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">补充前置知识： 分布式存储理论， 设计思想： 面向文档</summary>
+            
+                <content type="html">&lt;blockquote&gt;
+&lt;p&gt;补充前置知识： 分布式存储理论， 设计思想： 面向文档&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;数据分片&#34;&gt;数据分片&lt;/h2&gt;
+&lt;h3 id=&#34;为何要分片&#34;&gt;为何要分片&lt;/h3&gt;
+&lt;p&gt;es通过分片来现实存储空间的&lt;strong&gt;可扩展性&lt;/strong&gt;，分片是一个功能完整的搜索引擎（一个分片就是一个Lucene的实例），它拥有使用一个节点上的所有资源的能力&lt;/p&gt;
+&lt;h3 id=&#34;怎么路由&#34;&gt;怎么路由&lt;/h3&gt;
+&lt;p&gt;当索引一个文档的时候，文档会被存储到一个主分片中。 Elasticsearch 如何知道一个文档应该存放到哪个分片中呢？当我们创建文档时，它如何决定这个文档应当被存储在分片 1 还是分片 2 中呢？
+首先这肯定不会是随机的，否则将来要获取文档的时候我们就不知道从何处寻找了。实际上，这个过程是根据下面这个公式决定的：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;shard = hash(routing) % number_of_primary_shards&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;routing 是一个可变值，默认是文档的 _id ，也可以设置成一个自定义的值。 routing 通过 hash 函数生成一个数字，然后这个数字再对 number_of_primary_shards （主分片的数量）取模。这个分布在 0 到 number_of_primary_shards-1 之间的数，就是我们所寻求的文档所在分片的位置&lt;/p&gt;
+&lt;p&gt;实际上，所有的文档 API（ get 、 index 、 delete 、 bulk 、 update 以及 mget ）都接受一个叫做 routing 的路由参数 ，通过这个参数我们可以自定义文档到分片的映射。一个自定义的路由参数可以用来确保所有相关的文档（例如所有属于同一个用户的文档）都被存储到同一个分片中&lt;/p&gt;
+&lt;h3 id=&#34;elasticsearch-分片方式的局限性&#34;&gt;ElasticSearch 分片方式的局限性&lt;/h3&gt;
+&lt;p&gt;上面我们讲了es分片路由的方式，相信聪明的你已经很快想到这种方式有一个非常严重的问题，就是如果number_of_primary_shards发生了变化，也就是一个索引的主分片的数量被扩大或者缩小的话，大量的文档到分片的映射关系将会发生改变。这就解释了为什么我们要在创建索引的时候就确定好主分片的数量并且永远不会改变这个数量：因为如果数量变化了，那么所有之前路由的值都会无效，文档也再也找不到了&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;目前为止你是不是觉得es为何设计的如此之low，为何不用一致性hash之类的解决方案呢？ 其实这只是在性能和便利性之间的一个折中罢了，es也是有办法可以进行主分片的扩容的，只是es的设计者认为主分片扩容是很伤性能的一件事，用户应该在前期就规划好单个索引的数据量来避免不必要的数据迁移&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-split-index.html#:~:text=The%20split%20index%20API%20allows,is%20determined%20by%20the%20index.&#34;&gt;新版本es的split index解决方案&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;分片的复制&#34;&gt;分片的复制&lt;/h2&gt;
+&lt;h3 id=&#34;为何要复制&#34;&gt;为何要复制&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;当部分组件出现位障，系统依然可以继续工作，从而提高&lt;strong&gt;可用性&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;扩展至多台机器以同时提供数据访问服务，从而提高读吞吐量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;分片数量&#34;&gt;分片数量&lt;/h3&gt;
+&lt;p&gt;主分片的数量在索引创建的时候指定，后期无法更改。实际上，这个数目定义了这个索引能够存储的最大数据量，也就是说一个索引的容量是有上限的，不能无限扩容。副本分片的数量随时可以修改，增加副本分片可以增加数据查询的能力&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当然，如果只是在相同节点数目的集群上增加更多的副本分片并不能提高性能，因为每个分片从节点上获得的资源会变少，你需要增加更多的硬件资源来提升吞吐量。但是更多的副本分片数提高了数据冗余量：按照上面的节点配置，我们可以在失去2个节点的情况下不丢失任何数据。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;如何保证副本数据的一致性&#34;&gt;如何保证副本数据的一致性&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我们知道在分布式系统中，数据复制一般有三种方式：主从复制，多主复制，无主复制，这些复制方式都有各种的优缺点，显然es用的是主从复制的思路，那么有当使用主从复制的时候，一个主副本会有1到多个从副本，这些副本之间的一致性如何保证呢？如果主几点挂了，是否会丢失数据呢？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;es在数据一致性问题方面做的非常灵活，用户可以针对单个文档的单次提交干预其存储行为，用户在提交文档进行索引的时候可以传入一个&lt;code&gt;wait_for_active_shards&lt;/code&gt;参数（es5之前叫&lt;code&gt;consistency&lt;/code&gt;），表示需要得到几个副本的写入成功响应后再返回，否则就等待或者重试，直到超时。默认情况下，&lt;code&gt;wait_for_active_shards=1&lt;/code&gt;, 可以通过设置 &lt;code&gt;index.write.wait_for_active_shards&lt;/code&gt; 在索引的setting中动态覆盖此默认值。也可以在每次提交参数中指定,类似下面这样
+`&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;POST /my-index-000001/_doc?wait_for_active_shards&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;@timestamp&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;2099-11-15T13:12:00&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;111GET /search HTTP/1.1 200 1070000&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;user&amp;#34;&lt;/span&gt;: &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;kimchy&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;写入操作响应的_shards部分显示复制成功/失败的分片副本数,如下所示&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;_shards&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;#34;total&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;#34;failed&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;#34;successful&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;文档分布式索引过程文档写入过程&#34;&gt;文档分布式索引过程（文档写入过程）&lt;/h2&gt;
+&lt;h3 id=&#34;单个文档索引过程&#34;&gt;单个文档索引过程&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_three_pic_es_singledoc_write_process.png&#34; alt=&#34;图 2&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;客户端向任意节点发起请求(例图中node1),此时可以将node1叫做协调节点，协调节点负责根据文档-&amp;gt;分片的路由规则计算出主分片id&lt;/li&gt;
+&lt;li&gt;协调节点将请求转发到主分片所在的node节点（例图中node3）的Lucene实例上&lt;/li&gt;
+&lt;li&gt;执行主分片的写入操作,如果协调节点收到主分片写入成功的响应。则并行的执行写入副本操作（局部更新文档情况，会有retry_on_conflict逻辑）&lt;/li&gt;
+&lt;li&gt;协调节点判断如果有wait_for_active_shards数量的副本分片都写入成功，协调节点讲返回给客户端ACK，否则等到timeout时间后返回给客户端超时响应&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;多个文档索引过程&#34;&gt;多个文档索引过程&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_three_pic_es_mutidoc_write_process.png&#34; alt=&#34;图 3&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;客户端向任意节点发起bulk请求(例图中node1),此时可以将node1叫做协调节点，协调节点负责根据文档-&amp;gt;分片的路由规则计算出主分片id&lt;/li&gt;
+&lt;li&gt;协调节点(例图中node1) 向每个索引所在的节点创建一个批量请求，并将这些请求并行转发到每个包含主分片的节点主机&lt;/li&gt;
+&lt;li&gt;主分片一个接一个按顺序执行每个操作。当每个操作成功时，主分片并行转发新文档（或删除）到副本分片，然后执行下一个操作。 一旦所有的副本分片报告所有操作成功，该节点将向协调节点报告成功，协调节点将这些响应收集整理并返回给客户端&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;bulk API 还可以在整个批量请求的最顶层使用 wait_for_active_shards 参数，以及在每个请求中的元数据中使用 routing 参数&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;文档分布式取回fetch过程&#34;&gt;文档分布式取回（fetch）过程&lt;/h2&gt;
+&lt;h3 id=&#34;单个文档的fetch过程&#34;&gt;单个文档的fetch过程&lt;/h3&gt;
+&lt;h3 id=&#34;多个文档的fetch过程&#34;&gt;多个文档的fetch过程&lt;/h3&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/categories/distribute-storge/" term="distribute storge" label="distribute storge" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/elasticsearch/" term="elasticsearch" label="elasticsearch" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/distribte-storage/" term="distribte storage" label="distribte storage" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/storage/" term="storage" label="storage" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">捋一捋ElasticSearch（二）| 生态技术栈</title>
             <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_two/" />
             <id>https://neteric.github.io/posts/elasticsearch_principle_two/</id>
-            <updated>2022-10-13T23:50:10&#43;08:00</updated>
+            <updated>2022-10-16T16:17:05&#43;08:00</updated>
             <published>2022-10-03T10:21:24&#43;08:00</published>
             <author>
                     <name>neteric</name>
                     <uri>https://blog.neteric.top/</uri>
                     <email>neteric@126.com</email>
                     </author>
-            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">📌 数据查询 查询所有 查询index名为bank的数据，match_all表示查询所有的数据，sort即按照什么字段排序</summary>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html"></summary>
             
-                <content type="html">&lt;h3 id=&#34;-数据查询&#34;&gt;📌 数据查询&lt;/h3&gt;
+                <content type="html"></content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/categories/distribute-storge/" term="distribute storge" label="distribute storge" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/elasticsearch/" term="elasticsearch" label="elasticsearch" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/distribte-storage/" term="distribte storage" label="distribte storage" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://neteric.github.io/tags/storage/" term="storage" label="storage" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">捋一捋ElasticSearch（一）| 基本使用</title>
+            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_one/" />
+            <id>https://neteric.github.io/posts/elasticsearch_principle_one/</id>
+            <updated>2022-10-16T16:14:41&#43;08:00</updated>
+            <published>2022-10-02T10:21:24&#43;08:00</published>
+            <author>
+                    <name>neteric</name>
+                    <uri>https://blog.neteric.top/</uri>
+                    <email>neteric@126.com</email>
+                    </author>
+            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">📌 1. 索引管理 索引介绍 创建索引 创建名字为product的索引，并指定id为1的文档的内容</summary>
+            
+                <content type="html">&lt;h2 id=&#34;-1-索引管理&#34;&gt;📌 1. 索引管理&lt;/h2&gt;
+&lt;h3 id=&#34;索引介绍&#34;&gt;索引介绍&lt;/h3&gt;
+&lt;h3 id=&#34;创建索引&#34;&gt;创建索引&lt;/h3&gt;
+&lt;p&gt;创建名字为&lt;code&gt;product&lt;/code&gt;的索引，并指定id为1的文档的内容&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PUT /product/_doc/1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;computer&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_create_index.png&#34; alt=&#34;create_index&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;修改索引&#34;&gt;修改索引&lt;/h3&gt;
+&lt;h3 id=&#34;打开关闭索引&#34;&gt;打开/关闭索引&lt;/h3&gt;
+&lt;h3 id=&#34;删除索引&#34;&gt;删除索引&lt;/h3&gt;
+&lt;h3 id=&#34;查看索引&#34;&gt;查看索引&lt;/h3&gt;
+&lt;h3 id=&#34;批量索引文档&#34;&gt;批量索引文档&lt;/h3&gt;
+&lt;p&gt;在源码中找到测试数据并下载&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl https://github.com/elastic/elasticsearch/blob/v6.8.19/docs/src/test/resources/accounts.json
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将下载到的accounts.json文件批量导入到EleasticSearch中&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -H &amp;#34;Content-Type: application/json&amp;#34; -XPOST &amp;#34;username:password@localhost:9200/bank/_bulk?pretty&amp;amp;refresh&amp;#34; --data-binary &amp;#34;@./accounts.json&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;-2-文档管理&#34;&gt;📜 2. 文档管理&lt;/h2&gt;
+&lt;h2 id=&#34;-3搜索&#34;&gt;🔎 3.搜索&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;查询所有&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
@@ -136,89 +375,6 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 </content>
-            
-            
-            
-            
-            
-                
-                    
-                        
-                            
-                            
-                            
-                                <category scheme="https://neteric.github.io/categories/distribute-storge/" term="distribute storge" label="distribute storge" />
-                            
-                        
-                    
-                
-                    
-                        
-                            
-                            
-                            
-                                <category scheme="https://neteric.github.io/tags/elasticsearch/" term="elasticsearch" label="elasticsearch" />
-                            
-                        
-                            
-                            
-                            
-                                <category scheme="https://neteric.github.io/tags/distribte-storage/" term="distribte storage" label="distribte storage" />
-                            
-                        
-                            
-                            
-                            
-                                <category scheme="https://neteric.github.io/tags/storage/" term="storage" label="storage" />
-                            
-                        
-                    
-                
-            
-        </entry>
-    
-        <entry>
-            <title type="text">扒一下ElasticSearch原理（一）| 索引管理</title>
-            <link rel="alternate" type="text/html" href="https://neteric.github.io/posts/elasticsearch_principle_one/" />
-            <id>https://neteric.github.io/posts/elasticsearch_principle_one/</id>
-            <updated>2022-10-15T23:39:14&#43;08:00</updated>
-            <published>2022-10-02T10:21:24&#43;08:00</published>
-            <author>
-                    <name>neteric</name>
-                    <uri>https://blog.neteric.top/</uri>
-                    <email>neteric@126.com</email>
-                    </author>
-            <rights>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</rights><summary type="html">索引管理 📌 索引介绍 创建索引 创建名字为product的索引，并指定id为1的文档的内容</summary>
-            
-                <content type="html">&lt;h2 id=&#34;索引管理-&#34;&gt;索引管理 📌&lt;/h2&gt;
-&lt;h3 id=&#34;索引介绍&#34;&gt;索引介绍&lt;/h3&gt;
-&lt;h3 id=&#34;创建索引&#34;&gt;创建索引&lt;/h3&gt;
-&lt;p&gt;创建名字为&lt;code&gt;product&lt;/code&gt;的索引，并指定id为1的文档的内容&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PUT /product/_doc/1
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;s2&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span class=&#34;s2&#34;&gt;&amp;#34;computer&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://neteric.github.io/images/elasticsearch_principle_one_create_index.png&#34; alt=&#34;create_index&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;修改索引&#34;&gt;修改索引&lt;/h3&gt;
-&lt;h3 id=&#34;打开关闭索引&#34;&gt;打开/关闭索引&lt;/h3&gt;
-&lt;h3 id=&#34;删除索引&#34;&gt;删除索引&lt;/h3&gt;
-&lt;h3 id=&#34;查看索引&#34;&gt;查看索引&lt;/h3&gt;
-&lt;h3 id=&#34;批量索引文档&#34;&gt;批量索引文档&lt;/h3&gt;
-&lt;p&gt;在源码中找到测试数据并下载&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl https://github.com/elastic/elasticsearch/blob/v6.8.19/docs/src/test/resources/accounts.json
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将下载到的accounts.json文件批量导入到EleasticSearch中&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -H &amp;#34;Content-Type: application/json&amp;#34; -XPOST &amp;#34;username:password@localhost:9200/bank/_bulk?pretty&amp;amp;refresh&amp;#34; --data-binary &amp;#34;@./accounts.json&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;</content>
             
             
             
