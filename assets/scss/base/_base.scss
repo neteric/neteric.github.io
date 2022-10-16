@@ -34,7 +34,15 @@ body {
 .main {
     padding: 2em 1em 15em;
     display: block;
+    // background-color: #f2f2f5;
+    background-color: #fff;
+
 }
+
+.single-top {
+    padding-top: 1rem;
+}
+
 
 @if ($headerLayoutFlex) {
     .main {
@@ -45,6 +53,7 @@ body {
 .main-inner {
     margin: 0 auto;
     display: block;
+    // background-color: #fff;
 }
 
 .icon {

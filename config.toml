@@ -23,7 +23,7 @@ defaultContentLanguageInSubdir = false
 pluralizeListTitles = false
 
 # The length of text in words to show in summary
-summaryLength = 10
+summaryLength = 4
 
 # Enable Emoji emoticons support?
 enableEmoji = true
@@ -40,7 +40,7 @@ enableRobotsTXT = true
 # Number of items per page in paginated
 # lists (valid for the `posts` homepage
 # layout in MemE)
-paginate = 1
+paginate = 5
 
 # URL related
 disablePathToLower = false
@@ -1264,8 +1264,8 @@ uglyURLs = false
 
     displayFooterInHome = true
 
-    displayCopyleftSymbol = false
-    displayCopyrightSymbol = false
+    # displayCopyleftSymbol = true
+    displayCopyrightSymbol = true
 
     displaySiteCreatedYear = false
 
@@ -1284,7 +1284,7 @@ uglyURLs = false
     # Custom Footer (Markdown supported)
     customFooter = ""
 
-    displayBusuanziSiteUVAndPV = true
+    displayBusuanziSiteUVAndPV = false
     busuanziSiteUVText = ""
     busuanziSiteUVIcon = "user"
     busuanziSitePVText = ""

@@ -5,28 +5,13 @@
               {{- if .Site.Params.displayCopyleftSymbol -}}
                   <span class="copyleft-symbol">🄯</span>&nbsp;
               {{- end -}}
-              {{- if .Site.Params.displayCopyrightSymbol -}}
-                  ©&nbsp;
-              {{- end -}}
               {{partial "components/socials.html" . }}
-              {{- if .Site.Params.displaySiteCreatedYear -}}
-                  {{- dateFormat "2006" (time .Site.Params.siteCreatedTime) -}}–
-              {{- end -}}
-              {{- now.Format "2006" -}}
-
-              {{- with .Site.Params.iconBetweenYearAndAuthor -}}
-                  &nbsp;{{- partial "utils/icon.html" (dict "$" $ "name" . "class" "footer-icon") -}}&nbsp;
-              {{- else -}}
-                  &nbsp;
-              {{- end -}}
-
-              {{- .Site.Author.name -}}
             </div>
 
-            {{- if .Site.Params.displayPoweredBy }}
+            <!-- {{- if .Site.Params.displayPoweredBy }}
                 {{- $raw := `Powered by [Hugo](https://github.com/gohugoio/hugo) | Theme is [MemE](https://github.com/reuixiy/hugo-theme-meme)` -}}
                 <div class="powered-by">{{ partial "utils/markdownify.html" (dict "$" $ "raw" $raw "isContent" false) }}</div>
-            {{- end }}
+            {{- end }} -->
 
             {{- with .Site.Params.customFooter }}
                 {{- $raw := . -}}
@@ -69,15 +54,29 @@
                 </div>
             {{- end }}
             {{ partial "custom/footer.html" . }}
-
+            <a href="https://gohugo.io/"><img src="https://img.shields.io/badge/Powered%20By-Hugo-blue" alt="hugowebsite"></a>
+            <a href="https://github.com/reuixiy/hugo-theme-meme"><img src="https://img.shields.io/badge/Theme-MemE-brightgreen" alt="theme"></a>
+            <a href="https://neteric.top"><img src="https://img.shields.io/badge/Design%20By-neteric-orange" alt="theme"></a>
             {{- if .Site.Params.displaySiteCopyright }}
             {{- $raw := .Site.Copyright -}}
-            <!-- <hr> -->
-                        <a href="https://gohugo.io/"><img src="https://img.shields.io/badge/Powered%20By-Hugo-blue" alt="hugowebsite"></a>
-                        <a href="https://github.com/reuixiy/hugo-theme-meme"><img src="https://img.shields.io/badge/Theme-MemE-brightgreen"
-                                alt="theme"></a>
-                        <a href="https://neteric.top"><img src="https://img.shields.io/badge/Design%20By-neteric-orange" alt="theme"></a>
-            <div class="site-copyright">{{ partial "utils/markdownify.html" (dict "$" $ "raw" $raw "isContent" false) }}</div>
+            <div class="site-copyright">
+                {{- if .Site.Params.displayCopyrightSymbol -}}
+                ©&nbsp;
+                {{- end -}}
+                {{- if .Site.Params.displaySiteCreatedYear -}}
+                {{- dateFormat "2006" (time .Site.Params.siteCreatedTime) -}}–
+                {{- end -}}
+                {{- now.Format "2006" -}}
+                
+                {{- with .Site.Params.iconBetweenYearAndAuthor -}}
+                &nbsp;{{- partial "utils/icon.html" (dict "$" $ "name" . "class" "footer-icon") -}}&nbsp;
+                {{- else -}}
+                &nbsp;
+                {{- end -}}
+                
+                {{- .Site.Author.name -}} &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;
+                {{ partial "utils/markdownify.html" (dict "$" $ "raw" $raw "isContent" false) }}
+            </div>
             {{- end }}
         </div>
     </footer>

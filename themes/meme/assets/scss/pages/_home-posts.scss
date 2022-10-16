@@ -12,11 +12,17 @@ article.content.post.home {
 }
 
 .read-more-container {
-    text-align: center;
+    text-align: left;
     margin-top: 1.618em;
+    border-top: 0.1em lightgrey solid;
 }
 .read-more-link {
     display: inline-block;
+    // color: #2A6DF4;
+}
+
+.read-more-link:hover {
+    border-bottom: #2A6DF4 0.1em solid;
 }
 
 .pagination {
