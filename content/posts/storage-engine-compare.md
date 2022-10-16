@@ -4,6 +4,12 @@ date: 2022-08-18T16:10:03+08:00
 draft: false
 tags: ["B+Tree","LSM Tree", "Log Structed", "Linux IO", "Disk Struct"]
 categories: ["存储"]
+keywords: 
+  - storage engine
+  - LSM Tree
+  - B+ Tree
+  - Log Structed
+description: "存储引擎对比"
 ---
 ## 背景
 
