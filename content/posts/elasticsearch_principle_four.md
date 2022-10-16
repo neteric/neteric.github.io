@@ -1,6 +1,6 @@
 ---
-title: "捋一捋ElasticSearch（二）| 生态技术栈"
-date: 2022-10-03T10:21:24+08:00
+title: "捋一捋ElasticSearch（四）| Lucene存储引擎"
+date: 2022-10-05T10:21:24+08:00
 draft: false
 tags:
   [
@@ -10,5 +10,6 @@ tags:
   ]
 categories: ["distribute storge"]
 ---
+
 
 
