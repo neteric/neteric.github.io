@@ -121,7 +121,32 @@ public int count(Query query);
 ![picture 9](/images/elasticsearch_principle_four_pic_lucene_search_process.png)  
 
 ## 4. 动态索引更新（索引的写入）
+
 ### 4.1 Lucene的写入接口
+
+```java
+// initialization
+Directory index = new NIOFSDirectory(Paths.get("/index"));
+IndexWriterConfig config = new IndexWriterConfig();
+IndexWriter writer = new IndexWriter(index, config);
+
+// create a document
+Document doc = new Document();
+doc.add(new TextField("title", "Lucene - IndexWriter", Field.Store.YES));
+doc.add(new StringField("author", "aliyun", Field.Store.YES));
+
+// index the document
+writer.addDocument(doc);
+writer.commit();
+```
+
+先看下Lucene中如何使用IndexWriter来写入数据，上面是一段精简的调用示例代码，整个过程主要有三个步骤：
+
+- 初始化：初始化IndexWriter必要的两个元素是Directory和IndexWriterConfig，Directory是Lucene中数据持久层的抽象接口，通过这层接口可以实现很多不同类型的数据持久层，例如本地文件系统、网络文件系统、数据库或者是分布式文件系统。IndexWriterConfig内提供了很多可配置的高级参数，提供给高级玩家进行性能调优和功能定制，它提供的几个关键参数后面会细说
+- 构造文档：Lucene中文档由Document表示，Document由Field构成。Lucene提供多种不同类型的Field，其FiledType决定了它所支持的索引模式，当然也支持自定义Field，具体方式可参考上一篇文章
+- 写入文档：通过IndexWriter的addDocument函数写入文档，写入时同时根据FieldType创建不同的索引。文档写入完成后，还不可被搜索，最后需要调用IndexWriter的commit，在commit完后Lucene才保证文档被持久化并且是searchable的
+以上就是Lucene的一个简明的数据写入流程，核心是IndexWriter，整个过程被抽象的非常简洁明了
+
 Lucene中写操作主要是通过IndexWriter类实现，IndexWriter提供如下一些接口
 ```java
 public long addDocument();
