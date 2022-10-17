@@ -1,6 +1,7 @@
 .single {
     position: relative;
 }
+
 .single .main-inner {
     width: $postWidth;
 }
@@ -8,6 +9,7 @@
 .post-title {
     text-align: left;
     margin-bottom: 0;
+    margin-top: 0;
 }
 
 .post-subtitle {
@@ -121,7 +123,7 @@ blockquote {
     width: 236px;
     margin-top: 5em;
     // float: right;
-    
+
     // ol,
     // ul {
     //     list-style: none;
@@ -131,7 +133,7 @@ blockquote {
     // right: 0;
     font-size: 0.1em;
     // background-color: rgba(244, 243, 243, 0.888);
-    
+
 }
 
 .contents-title {
@@ -139,11 +141,13 @@ blockquote {
     text-align: center;
     border-bottom: 1px solid rgb(173, 170, 170);
 }
+
 ol,
 ul {
     margin: 0;
     padding: 0 0 0 20px;
 }
+
 ol,
 ul {
     &.toc {
