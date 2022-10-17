@@ -1,7 +1,7 @@
 ##########################################
 # Site Settings
 
-baseURL = "https://neteric.github.io"
+baseURL = "https://neteric.top"
 title = "neteric"
 languageCode = "en"
 hasCJKLanguage = false
@@ -828,7 +828,7 @@ uglyURLs = false
     displayReadingTime = true
     readingTimeIcon = "clock"
 
-    displayBusuanziPagePV = false
+    displayBusuanziPagePV = true
     busuanziPagePVIcon = "eye"
     # Note: render only in production
     #       environment
