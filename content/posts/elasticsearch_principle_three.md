@@ -13,17 +13,19 @@ categories: ["distribute storge"]
 > 前段时间学习过[MIT6.284 分布式系统](https://mit-public-courses-cn-translatio.gitbook.io/mit6-824/)这门课程，该课程主要讲解分布式系统中一些设计背景和经典案例，正好工作需要详细了解下ElasticSearch的原理，于是就按照分布式系统需要考虑的问题来拆解下ElasticSearch在分布式特性方面有哪些考虑和设计，做过哪些权衡和取舍
 
 ## 1. 分布式系统
+
 ### 1.1 设计分布式系统的驱动力
 
 - **可扩展性（Scalability**：人们需要获得更高的计算性能。可以这么理解这一点，（大量的计算机意味着）大量的并行运算，大量CPU、大量内存、以及大量磁盘在并行的运行
 - **可用性（Availability）**：另一个人们构建分布式系统的原因是，它可以提供容错（tolerate faults）比如两台计算机运行完全相同的任务，其中一台发生故障，可以切换到另一台
 - 延迟考虑: 如果客户遍布世界各地，通常需要考虑在全球范围内部署服务，以方便用户就近访问最近数据中心所提供的服务，从而避免数据请求跨越了半个地球才能到达目标
 
-
 ## 2. 数据分片
 
 海量的数据集，对系统的存储容量和查询能力都有很高的要求，分布式系统如何处理海量的数据请求并具有一定扩展性？
+
 ### 2.1 为何要分片
+
 采用数据分片的主要目的是提高可扩展性。不同的分片可以放在一个无共享集群的不同节点上。这样一个大数据集可以分散在更多的磁盘上，查询负载也随之分布到更多的磁盘和处理器上。对单个分片进行查询时，每个节点对自己所在分片可以独立执行查询操作，因此添加更多的节点可以提高查询吞吐量。 超大而复杂的查询尽管比较困难，但也可能做到跨节点的并行处理
 
 es中分片是一个功能完整的搜索引擎（一个分片就是一个Lucene的实例）它拥有使用一个节点上的所有资源的能力
@@ -88,6 +90,7 @@ POST /my-index-000001/_doc?wait_for_active_shards=3
   }
 }
 ```
+
 ## 4. 文档分布式索引过程（文档写入过程）
 
 ### 4.1 单个文档索引过程
@@ -109,12 +112,13 @@ POST /my-index-000001/_doc?wait_for_active_shards=3
 
 > bulk API 还可以在整个批量请求的最顶层使用 wait_for_active_shards 参数，以及在每个请求中的元数据中使用 routing 参数
 
-
 ## 5. 文档分布式取回（fetch）过程
+
 协调节点可以从主分片或者任意副本分片检索文档
 
 ### 5.1 单个文档的fetch过程
-![picture 1](/images/elasticsearch_principle_three_pic_es_singledoc_read_process.png) 
+
+![picture 1](/images/elasticsearch_principle_three_pic_es_singledoc_read_process.png)
 
 以下是从主分片或者副本分片检索文档的步骤顺序：
 
@@ -135,10 +139,13 @@ POST /my-index-000001/_doc?wait_for_active_shards=3
 
 1. 客户端向任意节点发起mget请求(例图中node1),此时可以将node1叫做协调节点,协调节点将多个请求的文档按照所在的分片进行分类
 2. 协调节点向每个分片构建多文档获取请求，然后并行转发这些请求到每个主分片或者副本分片所在的节点上。一旦收到所有答复， 协调节点构建响应并将其返回给客户端。
-   
+
 > 当然，也可以对个文档设置 routing 参数
 
 ![picture 2](/images/elasticsearch_principle_three_pic_es_mutidoc_read_process.png)  
 
+## 6. 集群发现机制
 
-## 分布式一致性和节点选举
+>集群发现机制包括：集群启动，节点发现，master选举，并在每次集群状态发生变化时发布集群状态
+
+参见[官方文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery.html)
