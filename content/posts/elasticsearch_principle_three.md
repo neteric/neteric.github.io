@@ -1,5 +1,5 @@
 ---
-title: "捋一捋ElasticSearch（三）| 分布式特性"
+title: "捋一捋ElasticSearch（二）| 分布式特性"
 date: 2022-10-04T10:21:24+08:00
 draft: false
 tags:
