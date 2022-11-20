@@ -1,6 +1,6 @@
 ---
-title: "捋一捋ElasticSearch（五）| 分布式搜索原理总结"
-date: 2022-10-05T10:21:24+08:00
+title: "捋一捋ElasticSearch（四）| 分布式搜索原理总结"
+date: 2022-10-06T10:21:24+08:00
 draft: false
 tags:
   [
@@ -10,6 +10,8 @@ tags:
   ]
 categories: ["distribute storge"]
 ---
+> 本文在前文的基础上，整体分析下elasticsearch的文档索引和文档搜索的过程
+
 
 ## 1.ElasticSearch 文档索引过程（写）
 

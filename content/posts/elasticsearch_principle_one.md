@@ -11,12 +11,13 @@ tags:
 categories: ["distribute storge"]
 ---
 
+> 罗列一些DSL的基本使用，后续遇到相关问题可以完善和查询使用,本文的用法，可以参考[官方文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html)
 
 ## :pushpin: 1. 索引管理
 
-### 索引介绍
+### 1.1 索引介绍
 
-### 创建索引
+### 1.2 创建索引
   
 创建名字为`product`的索引，并指定id为1的文档的内容
 
@@ -29,15 +30,18 @@ PUT /product/_doc/1
 
 ![create_index](/images/elasticsearch_principle_one_create_index.png)  
 
-### 修改索引
+### 1.3 修改索引
 
-### 打开/关闭索引
+### 1.4 打开/关闭索引
 
-### 删除索引
+### 1.5 删除索引
 
-### 查看索引
+### 1.6 查看索引
 
-### 批量索引文档
+### 1.7 批量索引文档
+
+### 1.8 索引设置
+
 
 在源码中找到测试数据并下载
 
@@ -56,7 +60,7 @@ curl -H "Content-Type: application/json" -XPOST "username:password@localhost:920
 
 ## :mag_right: 3.搜索
 
-- **查询所有**
+### 3.1 查询所有
   
 查询index名为bank的数据，`match_all`表示查询所有的数据，`sort`即按照什么字段排序
 
@@ -85,7 +89,7 @@ GET /bank/_search
   - hits._score - 文档的相关性得分（使用match_all时不适用）
 ```
 
-- **分页查询**
+### 3.2 分页查询
 
 从第`3`页记录开始查询，每页`5`条数据,与Sql语句中的offset和limit类似
 
@@ -101,7 +105,7 @@ GET /bank/_search
 }
 ```
 
-- **指定字段查询**
+### 3.3 指定字段查询
 
 ```
 GET /bank/_search
@@ -111,10 +115,15 @@ GET /bank/_search
 
 ```
 
-- **多条件查询**
+### 3.4 多条件查询
 
 ![picture 24](/images/elasticsearch_principle_one_search_by_field.png)  
 
-- **聚合查询（Aggregation）**
+### 3.5 聚合查询（Aggregation）
   
   在SQL中有group by，在ES中它叫Aggregation，即聚合运算
+
+
+## 参考文档
+
+> [1] [官方文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html)
