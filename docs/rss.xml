@@ -23,10 +23,302 @@
         
             <copyright>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</copyright>
         
-        <lastBuildDate>Wed, 19 Oct 2022 16:01:59 &#43;0800</lastBuildDate>
+        <lastBuildDate>Wed, 23 Nov 2022 16:00:22 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://neteric.top/rss.xml" />
         
+        
+            <item>
+                <title>离在线混部调研</title>
+                <link>https://neteric.top/posts/colocation_investigate/</link>
+                <guid isPermaLink="true">https://neteric.top/posts/colocation_investigate/</guid>
+                <pubDate>Tue, 15 Nov 2022 16:10:03 &#43;0800</pubDate>
+                
+                    <author>neteric@126.com (neteric)</author>
+                
+                <copyright>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</copyright>
+                
+                    <description>&lt;h2 id=&#34;1-背景&#34;&gt;1. 背景&lt;/h2&gt;
+&lt;p&gt;公司战略目标：降本增效&lt;/p&gt;
+&lt;p&gt;HPA上线使得在线业务的波谷期空闲出大量的计算资源&lt;/p&gt;
+&lt;p&gt;大数据业务云原生化是必然的趋势，公司大数据团队正在着手落地MR/Spark类的离线业务云原生化&lt;/p&gt;
+&lt;h2 id=&#34;2-离在线混部的目标&#34;&gt;2. 离在线混部的目标&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;尽可以能的提高资源利用率&lt;/li&gt;
+&lt;li&gt;保证在线业务的SLA&lt;/li&gt;
+&lt;li&gt;保证离线业务运行良好&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;3-业界离在线混部方案分类&#34;&gt;3. 业界离在线混部方案分类&lt;/h2&gt;
+&lt;p&gt;按照混合类型分： 分时复用和部分混合和全部混合&lt;/p&gt;
+&lt;p&gt;按照隔离类型分： 资源独享和资源共享&lt;/p&gt;
+&lt;p&gt;按照部署方式分： 虚拟机部署和容器部署&lt;/p&gt;
+&lt;p&gt;这三个维度的组合，目前实际应用中主要是&lt;code&gt;分时复用 + 独占资源 + 物理机部署&lt;/code&gt;、&lt;code&gt;部分混合 + 独占资源 + 容器部署&lt;/code&gt;、&lt;code&gt;全部混合 + 共享资源 + 容器部署&lt;/code&gt; 这三种模式，这三种模式其实也是离在线混部的三个阶段。&lt;/p&gt;
+&lt;h3 id=&#34;31-分时复用--独占资源--物理机部署&#34;&gt;3.1 分时复用 + 独占资源 + 物理机部署&lt;/h3&gt;
+&lt;p&gt;这种组合属于入门级的在离线混部选择，比如物理机运行服务且分时整机腾挪&lt;/p&gt;
+&lt;p&gt;好处是能够快速实现在离线混部，收获成本降低的红利。技术门槛上，这种方式规避了前面说的复杂的资源隔离问题，并且调度决策足够清晰，服务部署节奏有明确的预期，整个系统可以设计得比较简单。缺点是没有充分发挥出在离线混部的资源利用率潜力，目前主要是一些初创企业在应用。阿里早期在大促期间，将所有离线作业节点下线换上在线服务，也可以看做这种形态的近似版本&lt;/p&gt;
+&lt;h3 id=&#34;32-部分混合--独占资源--容器部署&#34;&gt;3.2 部分混合 + 独占资源 + 容器部署&lt;/h3&gt;
+&lt;p&gt;在这种模型下，业务开发人员将服务部署在云原生部署平台，选择某些指标（大部分伴随着流量潮汐特性）来衡量服务负载，平台会按照业务指定规则对服务节点数量扩缩容。当流量低峰期来临时，在线服务会有大量碎片资源可释放，部署平台会整理碎片资源，将碎片资源化零为整后，以整机的方式将资源租借给离线作业使用&lt;/p&gt;
+&lt;h3 id=&#34;33-全部混合--共享资源--容器部署&#34;&gt;3.3 全部混合 + 共享资源 + 容器部署&lt;/h3&gt;
+&lt;p&gt;与上述几种方案最大的不同在于，转让的资源规则是动态决策的。在一个大企业中，服务数量数以万计，要求所有在线服务制定扩缩容决策是很难做到的。同时，业务在部署服务时更关注服务稳定性，常常按照最大流量评估资源，这样就导致流量低峰期有大量的资源浪费。
+比较典型的是阿里，百度、腾讯的方案&lt;/p&gt;
+&lt;h2 id=&#34;4-离在线混部的难点和常见方案&#34;&gt;4. 离在线混部的难点和常见方案&lt;/h2&gt;
+&lt;h3 id=&#34;41-资源隔离&#34;&gt;4.1 资源隔离&lt;/h3&gt;
+&lt;p&gt;为了保证离线业务的运行不能影响在线业务的SLA，那必须要做好离在线资源的隔离,其实K8S本身的QoS策略就是为了按照优先级保障业务的稳定性，当Node节点的资源到达安全阈值的时候会发生&lt;a href=&#34;https://kubernetes.io/zh-cn/docs/concepts/scheduling-eviction/node-pressure-eviction/&#34;&gt;节点压力驱逐&lt;/a&gt;优先驱逐掉BestEffort类型的离线业务，其次是Burstable。但是当资源发生争抢，系统负载高的时候，仅仅通过K8S自身的手段，保证不了在线业务质量，在线业务会有明显的长尾延迟。所以一般会通过一些隔离手段来保证在线业务的稳定性，业界主要有如下一些方式&lt;/p&gt;
+&lt;h4 id=&#34;cpu-隔离&#34;&gt;CPU 隔离&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU Burst&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CPU Burst 技术最初由阿里云操作系统团队提出并贡献到Linux社区和龙蜥社区，分别在 Linux 5.14 和龙蜥ANCK 4.19 版本可用，在传统的 CPU Bandwidth Controller quota 和 period 基础上引入 burst 的概念。当容器的 CPU 使用低于 quota 时，可用于突发的 burst 资源累积下来；当容器的 CPU 使用超过 quota，允许使用累积的 burst 资源。最终达到的效果是将容器更长时间的平均 CPU 消耗限制在 quota 范围内，允许短时间内的 CPU 使用超过其 quota&lt;/p&gt;
+&lt;p&gt;在容器场景中使用 CPU Burst 之后，测试容器的服务质量显著提升，在实测中可以发现使用该特性技术以后，RT长尾问题几乎消失&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://developer.aliyun.com/article/786430?spm=a2c4g.11186623.0.0.48787123wBxE3H&#34;&gt;干掉讨厌的 CPU 限流，让容器跑得更快&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cfs 抢占调度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CFS让高优任务占尽优势的同时，也保留了低优任务使用CPU的权利，作为一个通用的调度算法，CFS是公平也是合理的。但当我们但在混部的场景下这会导致一个监控上的毛刺，或引发线上服务的抖动,CFS从设计理念上就不支持绝对抢占，因此，腾讯云原生内核自行研发了支持绝对抢占的离线调度器——BT调度&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://cloud.tencent.com/developer/article/1876817&#34;&gt;云原生下，TencentOS “如意” CPU QoS之绝对抢占&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;L3 Cache隔离技术&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;英特尔RDT提供了一个由多个组件功能（包括 CMT、CAT、CDP、MBM 和 MBA）组成的框架，用于缓存和内存监控及分配功能。这些技术可以跟踪和控制平台上同时运行的多个应用程序、容器或 VM 使用的共享资源，例如最后一级缓存 (LLC) 和主内存 (DRAM) 带宽。RDT 可以帮助检测“吵闹的邻居”并减少性能干扰，从而确保复杂环境中关键工作负载的性能&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.intel.cn/content/www/cn/zh/architecture-and-technology/resource-director-technology.html&#34;&gt;英特尔® 资源调配技术 (英特尔® RDT) 框架&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;超线程隔离&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在某些线上业务场景中，使用超线程情况下的 QPS 比未使用超线程时下降明显，并且相应 RT 也增加了不少。根本原因跟超线程的物理性质有关，超线程技术在一个物理核上模拟两个逻辑核，两个逻辑核具有各自独立的寄存器（eax、ebx、ecx、msr 等等）和 APIC，但会共享使用物理核的执行资源，包括执行引擎、L1/L2 缓存、TLB 和系统总线等等。这就意味着，如果一对 HT 的一个核上跑了在线任务，与此同时它对应的 HT 核上跑了一个离线任务，那么它们之间是会发生竞争的，这就是我们需要解决的问题。&lt;/p&gt;
+&lt;p&gt;为了尽可能减轻这种竞争的影响，我们想要让一个核上的在线任务执行的时候，它对应的 HT 上不再运行离线任务；或者当一个核上有离线任务运行的时候，在线任务调度到了其对应的 HT 上时，离线任务会被驱赶走。听起来离线混得很惨对不对？但是这就是我们保证 HT 资源不被争抢的机制&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://help.aliyun.com/document_detail/338407.html&#34;&gt;龙蜥Group Identity 技术&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://mp.weixin.qq.com/s/_DTQ4Q2dC-kN3zyozGf9QA&#34;&gt;龙蜥超线程隔离 SMT expeller 技术&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;离线大框，动态绑核&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;通过cpuset cgroup对整体混部大框做了绑核处理，避免混部任务进程频繁切换干扰在线业务进程。当混部算力改变时，再给离线大框动态选取相应的cpu核心进行绑定。同时在选取cpu核心的时候还需要考虑了cpu HT，即尽量将同一个物理核上的逻辑核同时绑定给混部任务使用。否则，如果在线任务和混部任务分别跑在一个物理核的两个逻辑核上，在线任务还是有可能受到“noisy neighbor”干扰&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://mp.weixin.qq.com/s/pPEkfrLm0XEpgMU1KjiD4A&#34;&gt;B站云原生混部技术实践&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;内存隔离&#34;&gt;内存隔离&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;存带宽分配(MBA)隔离&lt;/li&gt;
+&lt;li&gt;内存提前异步回收&lt;/li&gt;
+&lt;li&gt;oom score&lt;/li&gt;
+&lt;li&gt;基于内存安全阈值的主动驱逐机制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;磁盘隔离&#34;&gt;磁盘隔离&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;使用分布式存储实现存算分离&lt;/li&gt;
+&lt;li&gt;对块设备执行iops限速&lt;/li&gt;
+&lt;li&gt;bufferio 使用cgroupv2限制cache使用量&lt;/li&gt;
+&lt;li&gt;离线业务remote shuffle&lt;/li&gt;
+&lt;li&gt;使用diskquota对文件系统空间和inode数量限制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;网络隔离&#34;&gt;网络隔离&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;tc&lt;/li&gt;
+&lt;li&gt;网络QoS标签&lt;/li&gt;
+&lt;li&gt;ipset/iptables&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;干扰检测&#34;&gt;干扰检测&lt;/h4&gt;
+&lt;p&gt;虽然上述讨论了几种主要资源的管理，但由于底层技术限制，部分资源的管理还不完善，并且竞争资源不仅仅是这些，所以，为了保证安全混部，还要增加干扰检测和冲突处理。换句话说，资源隔离是为了避免干扰，干扰检测是根据应用的实际运行情况在冲突发生前或发生后采取措施。在线作业可以提供获取时延数据的方式，或者暴露相关接口，另外还可以收集一些硬件指标，如通过perf收集CPI数据，RDT收集L3 Cache，或epbf收集内核关键路径数据。通过算法分析来判断在线作业是否受影响，若发现异常，便开始降低离线资源，驱逐离线任务&lt;/p&gt;
+&lt;h3 id=&#34;42-离线业务的资源保障&#34;&gt;4.2 离线业务的资源保障&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;可压缩先压缩&lt;/li&gt;
+&lt;li&gt;不可压缩资源避让足量&lt;/li&gt;
+&lt;li&gt;基于资源满足的驱逐机制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;43-离在线调度框架的整合&#34;&gt;4.3 离在线调度框架的整合&lt;/h3&gt;
+&lt;p&gt;k8s的每个节点都会上报节点资源总量（例如allocatable cpu）。对于一个待调度的pod，k8s调度器会查看pod的资源请求配额（例如cpu reqeust）以及相关调度约束，然后经过预选和优选阶段，最终挑选出一个最佳的node用于部署该pod。如果混部任务直接使用这套原生的调度机制会存在几个问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;混部pod会占用原生的资源配额（例如cpu request），这会导致在线任务发布的时候没有可用资源；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;原生调度本质是静态调度，没有考虑机器实际负载，因此没法有效地将混部任务调度到实际负载有空闲的机器上&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;不支持Gang调度&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;44-可观测性体系的建立&#34;&gt;4.4 可观测性体系的建立&lt;/h3&gt;
+&lt;p&gt;可观测性对于排查单机的混部问题非常有用，我们需要监控曲线来查看某个时刻的混部资源使用情况。同时，我们也可以随时查看整体集群的混部算力使用趋势&lt;/p&gt;
+&lt;h3 id=&#34;45-部门墙&#34;&gt;4.5 部门墙&lt;/h3&gt;
+&lt;p&gt;公司内部，机器的产品线一般是固定的，成本和利用率也是按照产品线计算，所以通常情况下机器是不会在不同部门之间自由流转的。引入在离线混部之后，势必需要打破部门墙，对成本和资源利用率计算有一个能融合能分解的调整，才能准确反映出混部的巨大成本价值并持续精细化运营&lt;/p&gt;
+&lt;h2 id=&#34;5-koordinator-介绍&#34;&gt;5. Koordinator 介绍&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在版本迭代过程中，Koordinator社区始终围绕三大能力而构建，即任务调度、差异化 SLO 以及 QoS 感知调度能力。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.top/images/%E7%A6%BB%E5%9C%A8%E7%BA%BF%E6%B7%B7%E9%83%A8%E8%B0%83%E7%A0%94_koordinator_arch.png&#34; alt=&#34;picture 1&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;51-任务调度&#34;&gt;5.1 任务调度&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Enhanced Coscheduling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;机器学习和大数据领域中广泛存在的具备 All-or-Nothing 需求的作业负载。例如当提交一个Job 时会产生多个任务，这些任务期望要么全部调度成功，要么全部失败。这种需求称为 All-or-Nothing。为了解决 All-or-Nothing 调度需求，Koordinator 基于社区已有的 Coscheduling 实现了 Enhanced Coscheduling：
+支持 Strict/NonStrict 模式，解决大作业场景长时间得不到资源问题
+支持 AI 场景多角色联合的 coscheduling 策略，例如一个 TF  训练 Job 中包含 PS 和 Worker 两种角色，并且两种角色都需要单独定义 MinMember，但又期望两种角色的 All-or-Nothing 都满足后才能继续调度&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Enhanced ElasticQuota Scheduling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;企业的 Kubernetes 一般由多个产品和研发团队共用一个规模比较大的 Kubernetes 集群，由资源运维团队统一管理集群内大量 CPU/Memory/Disk 等资源。
+Koordinator 为帮助用户管理好资源额度，提升资源额度的使用效率，实现降本增效，Koordinator 基于基于社区 ElasticQuota CRD 实现了 Enhanced  ElasticQuota Scheduling&lt;/p&gt;
+&lt;p&gt;Koordinator ElasticQuota Scheduling 通过额度借用机制和公平性保障机制，Koordinator 把空闲的额度复用给更需要的业务使用。当额度的所有者需要额度时，Koordinator 又可以保障有额度可用。通过树形管理机制管理 Quota，可以方便的与大多数公司的组织结构映射，解决同部门内或者不同部门间的额度管理需求。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Fine-grained Device Scheduling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在 AI 领域，GPU、RDMA、FPGA 等异构资源被广泛的应用，Koordinator 针对异构资源调度场景，提供了精细化的设备调度管理机制，包括：
+支持 GPU 共享，GPU 独占，GPU 超卖
+支持百分比的 GPU 调度
+支持 GPU 多卡调度
+NVLink 拓扑感知调度（doing）&lt;/p&gt;
+&lt;h3 id=&#34;52-差异化-slo&#34;&gt;5.2 差异化 SLO&lt;/h3&gt;
+&lt;p&gt;差异化 SLO 是 Koordinator 提供的核心混部能力，保障资源超卖之后的 Pod 的运行稳定性。Koordinator 定了一一组 Priority &amp;amp; QoS，用户按照这一最佳实践的方式接入应用，配合完善的资源隔离策略，最终保障不同应用类型的服务质量。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU Supress&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Koordinator 的单机组件 koordlet 会根据节点的负载水位情况，调整 BestEffort 类型 Pod 的 CPU 资源额度。这种机制称为 CPU Suppress。当节点的在线服务类应用的负载较低时，koordlet 会把更多空闲的资源分配给 BestEffort 类型的 Pod 使用；当在线服务类应用的负载上升时，koordlet 又会把分配给 BestEffort 类型的 Pod 使用的 CPU 还给在线服务类应用。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU Burst&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CPU Burst 是一种服务级别目标 (SLO) 感知的资源调度功能。用户可以使用 CPU Burst 来提高对延迟敏感的应用程序的性能。内核的调度器会因为容器设置的 CPU Limit 压制容器的 CPU，这个过程称为 CPU Throttle。该过程会降低应用程序的性能。
+Koordinator 自动检测 CPU Throttle 事件，并自动将 CPU Limit 调整为适当的值。通过 CPU Burst 机制能够极大地提高延迟敏感的应用程序的性能。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于内存安全阈值的主动驱逐机制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当延迟敏感的应用程序对外提供服务时，内存使用量可能会由于突发流量而增加。类似地，BestEffort 类型的工作负载可能存在类似的场景，例如，当前计算负载超过预期的资源请求/限制。这些场景会增加节点整体内存使用量，对节点侧的运行时稳定性产生不可预知的影响。例如，它会降低延迟敏感的应用程序的服务质量，甚至变得不可用。尤其是在混部场景下，这个问题更具挑战性&lt;/p&gt;
+&lt;p&gt;Koordinator 中实现了基于内存安全阈值的主动驱逐机制。koordlet 会定期检查 Node 和 Pods 最近的内存使用情况，检查是否超过了安全阈值。如果超过，它将驱逐一些 BestEffort 类型的 Pod 释放内存。在驱逐前根据 Pod 指定的优先级排序，优先级越低，越优先被驱逐。相同的优先级会根据内存使用率（RSS）进行排序，内存使用率越高越优先被驱逐。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于资源满足的驱逐机制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CPU Suppress 在线应用的负载升高时可能会频繁的压制离线任务，这虽然可以很好的保障在线应用的运行时质量，但是对离线任务还是有一些影响的。虽然离线任务是低优先级的，但频繁压制会导致离线任务的性能得不到满足，严重的也会影响到离线的服务质量。而且频繁的压制还存在一些极端的情况，如果离线任务在被压制时持有内核全局锁等特殊资源，那么频繁的压制可能会导致优先级反转之类的问题，反而会影响在线应用。虽然这种情况并不经常发生。&lt;/p&gt;
+&lt;p&gt;为了解决这个问题，Koordinator 提出了一种基于资源满足度的驱逐机制。我们把实际分配的 CPU 总量与期望分配的 CPU 总量的比值成为 CPU 满足度。当离线任务组的 CPU 满足度低于阈值，而且离线任务组的 CPU 利用率超过 90% 时，koordlet 会驱逐一些低优先级的离线任务，释放出一些资源给更高优先级的离线任务使用。通过这种机制能够改善离线任务的资源需求。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;L3 Cache 和内存带宽分配(MBA) 隔离&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;混部场景下，同一台机器上部署不同类型的工作负载，这些工作负载会在硬件更底层的维度发生频繁的资源竞争。因此如果竞争冲突严重时，是无法保障工作负载的服务质量的。
+Koordinator 基于 Resource Director Technology (RDT, 资源导向技术) ，控制由不同优先级的工作负载可以使用的末级缓存（服务器上通常为 L3 缓存）。RDT 还使用内存带宽分配 (MBA) 功能来控制工作负载可以使用的内存带宽。这样可以隔离工作负载使用的 L3 缓存和内存带宽，确保高优先级工作负载的服务质量，并提高整体资源利用率。&lt;/p&gt;
+&lt;h3 id=&#34;53-qos-感知调度能力&#34;&gt;5.3 QoS 感知调度能力&lt;/h3&gt;
+&lt;p&gt;Koordinator 差异化 SLO 能力在节点侧提供了诸多 QoS 保障能力能够很好的解决运行时的质量问题。同时 Koordinator Scheduler 也在集群维度提供了增强的调度能力，保障在调度阶段为不同优先级和类型的 Pod 分配合适的节点。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;负载感知调度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Koordinator 的调度器提供了一个可配置的调度插件控制集群的利用率。该调度能力主要依赖于 koordlet 上报的节点指标数据，在调度时会过滤掉负载高于某个阈值的节点，防止 Pod 在这种负载较高的节点上无法获得很好的资源保障，另一方面是避免负载已经较高的节点继续恶化。在打分阶段选择利用率更低的节点。该插件会基于时间窗口和预估机制规避因瞬间调度太多的 Pod 到冷节点机器出现一段时间后冷节点过热的情况。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;精细化 CPU 调度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;随着资源利用率的提升进入到混部的深水区，需要对资源运行时的性能做更深入的调优，更精细的资源编排可以更好的保障运行时质量，从而通过混部将利用率推向更高的水平。
+我们把 Koordinator QoS 在线应用 LS 类型做了更细致的划分，分为 LSE、LSR 和 LS 三种类型。拆分后的 QoS 类型具备更高的隔离性和运行时质量。通过这样的拆分，整个 Koordinator QoS 语义更加精确和完整，并且兼容 Kubernetes 已有的 QoS 语义&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://koordinator.sh/docs&#34;&gt;更多参考&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;54-总结&#34;&gt;5.4 总结&lt;/h3&gt;
+&lt;p&gt;除了一些隔离特性依赖于内核的支持和缺乏一些运营平台如可观测平台，用户资源画像平台外，Koordinator是一个相对完善的在离线混部的解决方案&lt;/p&gt;
+&lt;h2 id=&#34;6-volcano-介绍&#34;&gt;6. Volcano 介绍&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Volcano是CNCF 下首个也是唯一的基于Kubernetes的容器批量计算平台，主要用于高性能计算场景。它提供了Kubernetes目前缺 少的一套机制，这些机制通常是机器学习大数据应用、科学计算、特效渲染等多种高性能工作负载所需的。作为一个通用批处理平台，Volcano与几乎所有的主流计算框 架无缝对接，如Spark 、TensorFlow 、PyTorch 、 Flink 、Argo 、MindSpore 、 PaddlePaddle 等。它还提供了包括基于各种主流架构的CPU、GPU在内的异构设备混合调度能力&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.top/images/%E7%A6%BB%E5%9C%A8%E7%BA%BF%E6%B7%B7%E9%83%A8%E8%B0%83%E7%A0%94_volcano_arch.png&#34; alt=&#34;picture 2&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;61-生态支持比较全面&#34;&gt;6.1 生态支持比较全面&lt;/h3&gt;
+&lt;p&gt;Volcano已经支持几乎所有的主流计算框架：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Spark&lt;/li&gt;
+&lt;li&gt;TensorFlow&lt;/li&gt;
+&lt;li&gt;PyTorch&lt;/li&gt;
+&lt;li&gt;Flink&lt;/li&gt;
+&lt;li&gt;Argo&lt;/li&gt;
+&lt;li&gt;MindSpore&lt;/li&gt;
+&lt;li&gt;PaddlePaddle&lt;/li&gt;
+&lt;li&gt;OpenMPI&lt;/li&gt;
+&lt;li&gt;Horovod&lt;/li&gt;
+&lt;li&gt;mxnet&lt;/li&gt;
+&lt;li&gt;Kubeflow&lt;/li&gt;
+&lt;li&gt;KubeGene&lt;/li&gt;
+&lt;li&gt;Cromwell&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;62-丰富的调度策略&#34;&gt;6.2 丰富的调度策略&lt;/h3&gt;
+&lt;p&gt;Volcano支持各种调度策略，包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Gang-scheduling&lt;/li&gt;
+&lt;li&gt;Fair-share scheduling&lt;/li&gt;
+&lt;li&gt;Queue scheduling&lt;/li&gt;
+&lt;li&gt;Preemption scheduling&lt;/li&gt;
+&lt;li&gt;Topology-based scheduling&lt;/li&gt;
+&lt;li&gt;Reclaims&lt;/li&gt;
+&lt;li&gt;Backfill&lt;/li&gt;
+&lt;li&gt;Resource Reservation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;得益于可扩展性的架构设计，Volcano支持用户自定义plugin和action以支持更多调度算法。&lt;/p&gt;
+&lt;h3 id=&#34;63--增强型的job管理能力&#34;&gt;6.3  增强型的Job管理能力&lt;/h3&gt;
+&lt;p&gt;Volcano提供了增强型的Job管理能力以适配高性能计算场景。这些特性罗列如下：&lt;/p&gt;
+&lt;p&gt;多pod类型job
+增强型的异常处理
+可索引Job&lt;/p&gt;
+&lt;h3 id=&#34;64-异构设备的支持&#34;&gt;6.4 异构设备的支持&lt;/h3&gt;
+&lt;p&gt;Volcano提供了基于多种架构的计算资源的混合调度能力：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;x86&lt;/li&gt;
+&lt;li&gt;ARM&lt;/li&gt;
+&lt;li&gt;鲲鹏&lt;/li&gt;
+&lt;li&gt;昇腾&lt;/li&gt;
+&lt;li&gt;GPU&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;65-总结&#34;&gt;6.5 总结&lt;/h3&gt;
+&lt;p&gt;Volcano支持丰富的离线计算生态，对现有大数据和AI计算调度场景天生兼容比较好，但其发展重点侧重于解决调度问题，作为离在线整体的解决方案还需要自己补充很多其他特性&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://volcano.sh/zh/docs/&#34;&gt;更多参考&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;7-总结实践思路&#34;&gt;7. 总结：实践思路&lt;/h2&gt;
+&lt;p&gt;线上：分时复用 + 独占资源 + 动态调度&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.top/images/%E7%A6%BB%E5%9C%A8%E7%BA%BF%E6%B7%B7%E9%83%A8%E8%B0%83%E7%A0%94_colocation_online_arch.png&#34; alt=&#34;picture 3&#34;&gt;&lt;/p&gt;
+&lt;p&gt;线下：共享内核 + 容器部署 + 动态策略&lt;/p&gt;
+&lt;p&gt;![picture 4](/images/&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.top/images/colocation_investigate_colocation_offline_arch_new.png&#34; alt=&#34;picture 5&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;参考文档&#34;&gt;参考文档&lt;/h2&gt;
+&lt;p&gt;[1] &lt;a href=&#34;https://cloud.tencent.com/developer/article/1759977&#34;&gt;腾讯：Caelus—全场景在离线混部解决方案&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[2] &lt;a href=&#34;https://cloud.tencent.com/developer/news/653586&#34;&gt;字节跳动：自动化弹性伸缩如何支持百万级核心错峰混部&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[3] &lt;a href=&#34;https://www.intel.cn/content/www/cn/zh/customer-spotlight/cases/bytedance-performance-evaluation-optimization.html&#34;&gt;字节跳动：混布环境下集群的性能评估与优化&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[4] &lt;a href=&#34;https://www.infoq.cn/article/aeut*zaiffp0q4mskdsg&#34;&gt;百度大规模战略性混部系统演进&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[5] &lt;a href=&#34;https://mp.weixin.qq.com/s/12XFN2lPB3grS5FteaF__A&#34;&gt;百度混部实践：如何提高 Kubernetes 集群资源利用率？&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[6] &lt;a href=&#34;https://developer.aliyun.com/article/651202&#34;&gt;阿里巴巴：数据中心日均 CPU 利用率 45% 的运行之道&amp;ndash;阿里巴巴规模化混部技术演进&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[7] &lt;a href=&#34;https://static.sched.com/hosted_files/kccncosschn19chi/70/ColocationOnK8s.pdf&#34;&gt;阿里巴巴：Co-Location of Workloads with High Resource Efficiency&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[8] &lt;a href=&#34;https://mp.weixin.qq.com/s/_DTQ4Q2dC-kN3zyozGf9QA&#34;&gt;阿里大规模业务混部下的全链路资源隔离技术演进&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[9] &lt;a href=&#34;https://www.infoq.cn/article/knqswz6qrggwmv6axwqu&#34;&gt;一文看懂业界在离线混部技术&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[10] &lt;a href=&#34;https://mp.weixin.qq.com/s/hQKM9beWcx7CKMvpJxznfQ&#34;&gt;美团：提升资源利用率与保障服务质量，鱼与熊掌不可兼得？&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[11] &lt;a href=&#34;https://mp.weixin.qq.com/s/pPEkfrLm0XEpgMU1KjiD4A&#34;&gt;B站云原生混部技术实践&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[12] &lt;a href=&#34;https://www.bilibili.com/video/BV1AZ4y1X7AQ/?vd_source=cad2cc6310088fc3945e9d1cb002adee&#34;&gt;华为：基于Volcano的离在线业务混部技术探索&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[13] &lt;a href=&#34;https://kubernetes.io/zh-cn/docs/concepts/scheduling-eviction/node-pressure-eviction/&#34;&gt;K8S节点压力驱逐&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[14] &lt;a href=&#34;https://www.youtube.com/watch?v=9ao7Ix2ugK4&#34;&gt;摆脱不必要的节流,同时实现高CPU利用率和高应用程序性能&lt;/a&gt;&lt;/p&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.top/categories/%E6%B7%B7%E9%83%A8/">混部</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.top/tags/%E6%B7%B7%E9%83%A8/">混部</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.top/tags/%E8%B0%83%E5%BA%A6/">调度</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://neteric.top/tags/%E8%B5%84%E6%BA%90%E9%9A%94%E7%A6%BB/">资源隔离</category>
+                                
+                            
+                        
+                    
+                
+            </item>
         
             <item>
                 <title>捋一捋ElasticSearch（四）| 分布式搜索原理总结</title>
@@ -1611,6 +1903,184 @@ DNS 支持的 IP 列表有限制。我们知道 DNS 使用 UDP 报文进行信�
                                     <category domain="https://neteric.top/tags/nginx/">Nginx</category>
                                 
                             
+                        
+                    
+                
+            </item>
+        
+            <item>
+                <title></title>
+                <link>https://neteric.top/posts/koordinator%E8%B0%83%E7%A0%94/</link>
+                <guid isPermaLink="true">https://neteric.top/posts/koordinator%E8%B0%83%E7%A0%94/</guid>
+                <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate>
+                
+                    <author>neteric@126.com (neteric)</author>
+                
+                <copyright>[蜀ICP备2022023345号-1](http://beian.miit.gov.cn/)</copyright>
+                
+                    <description>&lt;h3 id=&#34;问题思考&#34;&gt;问题思考&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;ldquo;Koordinator自动检测CPU Throttle事件，并自动将CPU Limit调整为适当的值&amp;rdquo;，这个方式其实对在线业务是有影响的，那如何做到对在线业务的影响&amp;lt;5%的呢？是怎么计算的呢？&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;混部的场景下，即使限制了离线业务cpu的使用，但离线业务的内存仍然没有释放，在线业务的高峰期由于内存问题还是无法处理更多的在线请求，这个情况怎么处理呢？&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;标准通用的混部解决方案&#34;&gt;标准、通用的混部解决方案&lt;/h2&gt;
+&lt;p&gt;混部需要一套完整、自闭环的调度回路，但在企业应用混部的过程中，将要面临的两大挑战是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;应用如何接入到混部平台&lt;/li&gt;
+&lt;li&gt;应用如何在平台上能够运行稳定、高效&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;大规模生产实践锤炼&#34;&gt;大规模生产实践锤炼&lt;/h3&gt;
+&lt;p&gt;2021 双 11 之后阿里对外宣布了“首次！统一调度系统规模化落地，全面支撑阿里巴巴双 11 全业务”：&lt;/p&gt;
+&lt;p&gt;作为阿里巴巴的核心项目，阿里云（容器团队和大数据团队）联合阿里巴巴资源效能团队、蚂蚁容器编排团队，历时一年多研发和技术攻坚，实现了从“混部技术”到今天“统一调度技术”的全面升级。&lt;/p&gt;
+&lt;p&gt;今天，统一调度已实现阿里巴巴电商、搜推广、MaxCompute 大数据的调度全面统一，实现了 Pod 调度和 task 高性能调度的统一，实现了完整的资源视图统一和调度协同，实现了多种复杂业务形态的混部和利用率提升，全面支撑了全球数十个数据中心、数百万容器、数千万核的大规模资源调度。
+作为云原生混部的践行者，阿里巴巴是真刀真枪的在生产环境中推进混部技术理念，并在去年双 11 完成了超过千万核的混部规模，通过混部技术帮助阿里巴巴双 11 节约超过 50% 的大促资源成本，在大促快上快下链路上提速 100%，助力大促实现丝滑的用户体验。
+正是在双 11 这样的峰值场景驱动之下，阿里的混部调度技术持续演进，积累了大量的生产实践经验，到今天已经是第三代即云原生全业务混部系统。Koordinator 的架构基于阿里巴巴内部的超大规模生产实践，结合阿里云看到的企业容器客户的真实诉求，在标准化、通用化上做出了更多的突破，实现首个基于标准 Kubernetes 的生产可用的开源混部系统。&lt;/p&gt;
+&lt;h3 id=&#34;支持丰富的负载类型&#34;&gt;支持丰富的负载类型&lt;/h3&gt;
+&lt;p&gt;混部是一套针对延迟敏感服务的精细化编排+大数据计算工作负载混合部署的资源调度解决方案，核心技术在于：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;精细的资源编排，以满足性能及长尾时延的要求，关键点是精细化的资源调度编排策略及 QoS 感知策略；&lt;/li&gt;
+&lt;li&gt;智能的资源超卖，以更低成本满足计算任务对计算资源的需求，并保证计算效率的同时不影响延迟敏感服务的响应时间。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://neteric.top/images/Koordinator%E8%B0%83%E7%A0%94_pic_1668160549204.png&#34; alt=&#34;picture 1&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图是 Koordinator 混部资源超卖模型，也是混部最关键最核心的地方。其中超卖的基本思想是去利用那些已分配但未使用的资源来运行低优先级的任务，如图所示的四条线分别是资源使用量（红线），短生命周期可超卖量（蓝线），长生命周期可超卖量（浅蓝），以及资源总量（黑线）。
+该资源模型足够精炼的同时也具备很强的灵活性，支持丰富的在线资源编排类别，支持短生命周期的批处理任务（MapReduce 类别），以及实时计算类的生命周期任务。Koordinator 整个混部资源调度的大厦构建在这样一个资源模型的基础之上，配合上优先级抢占、负载感知、干扰识别和 QoS 保障技术，构建出混部资源调度底层核心系统。Koordinator 社区将围绕这个思路投入建设，持续将混部场景的调度能力展开，解决企业面临的真实业务场景问题。&lt;/p&gt;
+&lt;h3 id=&#34;零侵入低接入成本&#34;&gt;零侵入，低接入成本&lt;/h3&gt;
+&lt;p&gt;企业接入混部最大的挑战是如何让应用跑在混部平台之上，这第一步的门槛往往是最大的拦路虎。Koordinator 针对这一问题，结合内部生产实践经验，设计了“零侵入”的混部调度系统：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对 Kubernetes 平台的零侵入：无需修改任何 Kubernetes 原生组件，而是以插件的方式增强混部需要的各种能力&lt;/li&gt;
+&lt;li&gt;对工作负载编排系统的零侵入：无需修改计算任务的管理引擎（operator），而是以配置化的方式管理混部策略参数，简化应用接入的难度&lt;/li&gt;
+&lt;li&gt;支持系统的平滑升级：已有的 Kubernetes 集群的调度器可以平滑升级到 Koordinator，存量的 Pod 的标准调度能力可以无损接管到 Koordinator 中&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;通过在这三方面的努力，降低用户在生产环境中引入 Koordinator 的难度，只在帮助用户解决生产环境应用混部的第一道拦路虎。&lt;/p&gt;
+&lt;h2 id=&#34;版本特性深入解读&#34;&gt;版本特性深入解读&lt;/h2&gt;
+&lt;p&gt;自 2022 年 4 月份 Koordinator 发布以来，社区致力于解决任务混部最核心的资源编排、资源隔离的问题&lt;/p&gt;
+&lt;p&gt;在版本迭代过程中，Koordinator社区始终围绕三大能力而构建，即任务调度、差异化 SLO 以及 QoS 感知调度能力。&lt;/p&gt;
+&lt;h3 id=&#34;任务调度&#34;&gt;任务调度&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Enhanced Coscheduling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Koordinator 在启动之初，期望支持 Kubernetes 多种工作负载的混部调度，提高工作负载的运行时效率和可靠性，其中就包括了机器学习和大数据领域中广泛存在的具备 All-or-Nothing 需求的作业负载。例如当提交一个Job 时会产生多个任务，这些任务期望要么全部调度成功，要么全部失败。这种需求称为 All-or-Nothing，对应的实现被称作 Gang Scheduling(or Coscheduling) 。为了解决 All-or-Nothing 调度需求，Koordinator 基于社区已有的 Coscheduling 实现了 Enhanced Coscheduling：
+支持 Strict/NonStrict 模式，解决大作业场景长时间得不到资源问题
+支持 AI 场景多角色联合的 coscheduling 策略，例如一个 TF  训练 Job 中包含 PS 和 Worker 两种角色，并且两种角色都需要单独定义 MinMember，但又期望两种角色的 All-or-Nothing 都满足后才能继续调度&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Enhanced ElasticQuota Scheduling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;企业的 Kubernetes 一般由多个产品和研发团队共用一个规模比较大的 Kubernetes 集群，由资源运维团队统一管理集群内大量 CPU/Memory/Disk 等资源。
+Koordinator 为帮助用户管理好资源额度，提升资源额度的使用效率，实现降本增效，Koordinator 基于基于社区 ElasticQuota CRD 实现了 Enhanced  ElasticQuota Scheduling ，具备如下增强特性：
+兼容社区的 ElasticQuota CRD，用户可以无缝升级到 Koordinator
+支持树形结构管理 Quota，契合企业的组织架构
+支持按照共享权重(shared weight)保障公平性
+允许用户设置是否允许借用 Quota 给其他消费对象&lt;/p&gt;
+&lt;p&gt;Koordinator ElasticQuota Scheduling 通过额度借用机制和公平性保障机制，Koordinator 把空闲的额度复用给更需要的业务使用。当额度的所有者需要额度时，Koordinator 又可以保障有额度可用。通过树形管理机制管理 Quota，可以方便的与大多数公司的组织结构映射，解决同部门内或者不同部门间的额度管理需求。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Fine-grained Device Scheduling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在 AI 领域，GPU、RDMA、FPGA 等异构资源被广泛的应用，Koordinator 针对异构资源调度场景，提供了精细化的设备调度管理机制，包括：
+支持 GPU 共享，GPU 独占，GPU 超卖
+支持百分比的 GPU 调度
+支持 GPU 多卡调度
+NVLink 拓扑感知调度（doing）&lt;/p&gt;
+&lt;h3 id=&#34;差异化-slo&#34;&gt;差异化 SLO&lt;/h3&gt;
+&lt;p&gt;差异化 SLO 是 Koordinator 提供的核心混部能力，保障资源超卖之后的 Pod 的运行稳定性。Koordinator 定了一一组 Priority &amp;amp; QoS，用户按照这一最佳实践的方式接入应用，配合完善的资源隔离策略，最终保障不同应用类型的服务质量。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU Supress&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Koordinator 的单机组件 koordlet 会根据节点的负载水位情况，调整 BestEffort 类型 Pod 的 CPU 资源额度。这种机制称为 CPU Suppress。当节点的在线服务类应用的负载较低时，koordlet 会把更多空闲的资源分配给 BestEffort 类型的 Pod 使用；当在线服务类应用的负载上升时，koordlet 又会把分配给 BestEffort 类型的 Pod 使用的 CPU 还给在线服务类应用。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU Burst&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CPU Burst 是一种服务级别目标 (SLO) 感知的资源调度功能。用户可以使用 CPU Burst 来提高对延迟敏感的应用程序的性能。内核的调度器会因为容器设置的 CPU Limit 压制容器的 CPU，这个过程称为 CPU Throttle。该过程会降低应用程序的性能。&lt;/p&gt;
+&lt;p&gt;Koordinator 自动检测 CPU Throttle 事件，并自动将 CPU Limit 调整为适当的值。通过 CPU Burst 机制能够极大地提高延迟敏感的应用程序的性能。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于内存安全阈值的主动驱逐机制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当延迟敏感的应用程序对外提供服务时，内存使用量可能会由于突发流量而增加。类似地，BestEffort 类型的工作负载可能存在类似的场景，例如，当前计算负载超过预期的资源请求/限制。这些场景会增加节点整体内存使用量，对节点侧的运行时稳定性产生不可预知的影响。例如，它会降低延迟敏感的应用程序的服务质量，甚至变得不可用。尤其是在混部场景下，这个问题更具挑战性。
+我们在 Koordinator 中实现了基于内存安全阈值的主动驱逐机制。koordlet 会定期检查 Node 和 Pods 最近的内存使用情况，检查是否超过了安全阈值。如果超过，它将驱逐一些 BestEffort 类型的 Pod 释放内存。在驱逐前根据 Pod 指定的优先级排序，优先级越低，越优先被驱逐。相同的优先级会根据内存使用率（RSS）进行排序，内存使用率越高越优先被驱逐。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于资源满足的驱逐机制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;CPU Suppress 在线应用的负载升高时可能会频繁的压制离线任务，这虽然可以很好的保障在线应用的运行时质量，但是对离线任务还是有一些影响的。虽然离线任务是低优先级的，但频繁压制会导致离线任务的性能得不到满足，严重的也会影响到离线的服务质量。而且频繁的压制还存在一些极端的情况，如果离线任务在被压制时持有内核全局锁等特殊资源，那么频繁的压制可能会导致优先级反转之类的问题，反而会影响在线应用。虽然这种情况并不经常发生。&lt;/p&gt;
+&lt;p&gt;为了解决这个问题，Koordinator 提出了一种基于资源满足度的驱逐机制。我们把实际分配的 CPU 总量与期望分配的 CPU 总量的比值成为 CPU 满足度。当离线任务组的 CPU 满足度低于阈值，而且离线任务组的 CPU 利用率超过 90% 时，koordlet 会驱逐一些低优先级的离线任务，释放出一些资源给更高优先级的离线任务使用。通过这种机制能够改善离线任务的资源需求。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;L3 Cache 和内存带宽分配(MBA) 隔离&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;混部场景下，同一台机器上部署不同类型的工作负载，这些工作负载会在硬件更底层的维度发生频繁的资源竞争。因此如果竞争冲突严重时，是无法保障工作负载的服务质量的。
+Koordinator 基于 Resource Director Technology (RDT, 资源导向技术) ，控制由不同优先级的工作负载可以使用的末级缓存（服务器上通常为 L3 缓存）。RDT 还使用内存带宽分配 (MBA) 功能来控制工作负载可以使用的内存带宽。这样可以隔离工作负载使用的 L3 缓存和内存带宽，确保高优先级工作负载的服务质量，并提高整体资源利用率。&lt;/p&gt;
+&lt;h3 id=&#34;qos-感知调度重调度&#34;&gt;QoS 感知调度、重调度&lt;/h3&gt;
+&lt;p&gt;Koordinator 差异化 SLO 能力在节点侧提供了诸多 QoS 保障能力能够很好的解决运行时的质量问题。同时 Koordinator Scheduler 也在集群维度提供了增强的调度能力，保障在调度阶段为不同优先级和类型的 Pod 分配合适的节点。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;负载感知调度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;超发资源可以极大的提升集群的资源利用率，但也会凸显集群内节点之间资源利用率不均匀的现象。这个现象在非混部环境下也是存在的，只是因为 Kubernetes 原生是不支持资源超发机制，节点上的利用率往往不是很高，一定程度上掩盖了这个问题。但当混部时，资源利用率会上升到比较高的水位时就暴露了这个问题。
+利用率不均匀一般是节点之间不均匀以及出现局部的负载热点，局部的负载热点会可能影响工作负载的整体运行效果。另一个是在负载高的节点上，在线应用和离线任务之间可能会存在的严重的资源冲突，影响到在线应用的运行时质量。
+为了解决这个问题， Koordinator 的调度器提供了一个可配置的调度插件控制集群的利用率。该调度能力主要依赖于 koordlet 上报的节点指标数据，在调度时会过滤掉负载高于某个阈值的节点，防止 Pod 在这种负载较高的节点上无法获得很好的资源保障，另一方面是避免负载已经较高的节点继续恶化。在打分阶段选择利用率更低的节点。该插件会基于时间窗口和预估机制规避因瞬间调度太多的 Pod 到冷节点机器出现一段时间后冷节点过热的情况。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;精细化 CPU 调度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;随着资源利用率的提升进入到混部的深水区，需要对资源运行时的性能做更深入的调优，更精细的资源编排可以更好的保障运行时质量，从而通过混部将利用率推向更高的水平。
+我们把 Koordinator QoS 在线应用 LS 类型做了更细致的划分，分为 LSE、LSR 和 LS 三种类型。拆分后的 QoS 类型具备更高的隔离性和运行时质量。通过这样的拆分，整个 Koordinator QoS 语义更加精确和完整，并且兼容 Kubernetes 已有的 QoS 语义。
+而且我们针对 Koordinator QoS，设计了一套丰富灵活的 CPU 编排策略，如下表所示。
+图片&lt;/p&gt;
+&lt;p&gt;不同的 QoS 类型的工作负载具备不同的隔离性：
+图片
+Koordinator Scheduler 会针对 LSE/LSR 类型的 Pod 分配具体的 CPU 逻辑核，并更新到 Pod Annotation 中，由单机侧 koordlet 配合，把调度器分配的 CPU 更新到 cgroup 中。
+调度器在分配 CPU 时，会根据 CPU 拓扑结构分配，默认尽可能的保障分配的 CPU 属于同一个 NUMA Node 以获得更好的性能。并且 CPU 调度时，支持 Pod 根据需要设置不同的互斥策略，例如一个系统中多个核心的服务部署在相同的物理核上，性能表现比较差，但分开就完全没问题，此时就可以配置互斥策略，调度器会尽可能的把这种互斥属性的 Pod 分配使用不同的物理核。并且在打分阶段，调度器会参考集群的整体情况，选择符合 CPU 编排要求的节点。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;资源预留（Reservation）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Koordinator 支持在不侵入 Kubernetes 已有的机制和代码前提下，实现了资源预留的原子能力(Reservation)。Koordinator Reservation API 允许用户不修改 Pod Spec 或者存量的 Workload(例如 Deployment, StatefulSet）即可以预留资源。资源预留在容量管理、碎片优化、调度成功率和重调度等场景有重要作用：
+当有重要的工作负载在未来某段时间需要资源时，可以提前预留资源满足需求。
+用户在 PaaS 上发起扩容时，可以通过资源预留能力尝试预留，预留成功后发起扩容，保障 PaaS 的 SLA。
+用户在 PaaS 上发布时，如果应用采用了滚动发布的能力，可以通过资源预留保留即将销毁的 Pod 持有的资源，在滚动发布时，新建的 Pod 可以复用预留下来的原有资源，能够有效提高滚动发布的成功率。
+碎片优化场景中，可以通过资源预留占住空闲的碎片资源，并把可被整理的 Pod 迁移到这些节点。
+重调度时在发起驱逐前，先尝试预留资源，预留成功后发起驱逐，避免驱逐后无资源可用影响应用的可用性。&lt;/p&gt;
+&lt;p&gt;图片&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;灵活可扩展且安全的重调度器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;调度器调度时是根据当时集群内的情况和配置，做出综合的判断，选择出一个最合适的节点分配给 Pod 使用。但随着时间和工作负载的变化，原本最合适的节点也会变差，差异化 SLO 和调度器都提供了丰富的能力帮助改善这些问题，但差异化 SLO 更多还是关注在自身单机的情况，无法感知全局的变化。
+从控制的角度看，我们也需要根据集群内的情况做出决策，把异常的 Pod 驱逐迁移到更合适的节点，让这些 Pod 有机会可以更好的对外服务。因此 Koordinator Descheduler 应运而生。
+我们认为 Pod 迁移是一个复杂的过程，涉及到审计、资源分配、应用启动等步骤，还夹杂着应用的发布升级、扩容/缩容场景和集群管理员的资源运维操作。因此，如何管理 Pod 迁移过程的稳定性风险，保证应用不会因为 Pod 的迁移影响可用性，是一个非常关键的必须解决的问题。
+为了让大家更好的理解，举几个场景：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;社区的重调度器内置的多个重调度策略根据自身逻辑判断某个 Pod 是否要被迁移，需要迁移时调用 Kubernetes Eviction API  发起驱逐。但是这个过程并不关注被驱逐的 Pod 在将来是否可以分配到资源。因此存在大量 Pod 被驱逐后因为没有资源而处于 Pending 状态的情况。如果应用此时有大量请求进来，又因为没有足够的可用的 Pod 导致可用性异常。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;另外，社区重调度器调用的 Kubernetes Evcition API 虽然会检查 PDB 确保在安全范围内驱逐，但是众所周知，众多的 workload Controller 在发布和缩容场景都是通过直接调用 Delete API 的形式销毁 Pod，此时并不会被 PDB 限制。这就导致重调度时如果遇到上述场景，是很可能引发严重的稳定性问题。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;我们认为 Pod 腾挪不是一个简单的后台自动化逻辑，有相当多的场景和用户期望由人工介入手工迁移 Pod，甚至期望重调度时发起的自动迁移请求应该被拦截掉，经过审批决定是否执行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Koordinator 基于 CRD 定义了一个名为 PodMigrationJob API。重调度器或者其他自动化自愈组件通过 PodMigrationJob 可以安全的迁移 Pod。PodMigrationJob Controller 在处理 PodMigrationJob 时会先尝试通过 Koordinator Reservation 机制预留资源，预留失败则迁移失败；资源预留成功后发起驱逐操作并等待预留的资源被消费。中间的过程都会记录到 PodMigrationJobStatus 中，并产生相关的 Event。
+我们在 Koordinator 中实现了一个全新的 Descheduler Framework。我们认为重调度场景：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;需要一个插件化机制实现自定义的重调度策略，但又不希望这个抽象过于复杂；&lt;/li&gt;
+&lt;li&gt;需要具备基本的插件管理能力，通过配置启用和禁用插件；&lt;/li&gt;
+&lt;li&gt;具备统一的插件配置下发机制，方便插件自定义参数；&lt;/li&gt;
+&lt;li&gt;并能够方便的扩展和使用统一的 Evictor 机制；&lt;/li&gt;
+&lt;li&gt;另外期望用户能够基于 controller-runtime 实现 controller 并纳入统一的插件管理机制。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Koordinator descheduler framework 提供了插件配置管理（例如启用、禁用，统一配置等）、插件初始化、插件执行周期管理等机制。并且该框架内置了基于 PodMigrationJob 实现的 Controller，并作为 Evictor Plugin 方便被各种重调度插件使用，帮助重调度插件安全的迁移 Pod。
+基于 Koordinator descheduler framework，用户可以非常容易的扩展实现自定义重调度策略，就像基于 Kubernetes scheduling framework 的实现自定义的调度插件一样简单。并且用户也可以以插件的形式实现 controller，支持基于 Event 触发重调度的场景。&lt;/p&gt;
+&lt;h2 id=&#34;koordinator-的未来规划&#34;&gt;Koordinator 的未来规划&lt;/h2&gt;
+&lt;p&gt;Koordinator 社区将不断丰富大数据计算任务混部的形态，拓展包括 Hadoop YARN 等计算框架混部支持，丰富任务混部解决方案，项目上持续的完善干扰检测、问题诊断体系，推进更多的负载类型融入 Koordinator 生态，并取得更好的资源运行效率。&lt;/p&gt;
+&lt;p&gt;图片
+Koordinator 社区将持续的保持中立的发展趋势，联合各厂商持续的推进混部能力的标准化，也欢迎大家加入社区共同推进混部的标准化进程。&lt;/p&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                    
                         
                     
                 
