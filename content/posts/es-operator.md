@@ -20,7 +20,8 @@ iteration uint64
 
 1. 入队了Generic事件，用于检测es实际状态
 2. 入队了不是本资源的NamespacedName，用于将一个资源的变化转换成一个或者多个其他资源入队
-3. 动态watch，允许在调谐期间加入watch的资源
+3. 动态watch，允许在调谐期间加入watch的资源w
+   
 
 
 watch的资源：
@@ -33,3 +34,14 @@ watch的资源：
 
 
 operator重启，
+
+es operator 框架特性
+
+1. 动态watch
+2. 有状态集群状态监控和感知，状态变化触发reconcile
+3. pvc扩容
+4. Expectation机制保证并发的同时缓存一致
+5. validatePodTemplate
+6. 脚本注入
+
+
