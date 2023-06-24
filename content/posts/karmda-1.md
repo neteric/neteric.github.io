@@ -18,5 +18,6 @@ work.karmada.io/v1alpha2       ClusterResourceBinding
 work.karmada.io/v1alpha2       ResourceBinding
 work.karmada.io/v1alpha1       Work
 
+### cluster.karmada.io/v1alpha1    Cluster
 
 ##
