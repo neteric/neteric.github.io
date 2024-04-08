@@ -71,6 +71,41 @@ EXECUTE sys.sp_cdc_disable_table
 SELECT is_tracked_by_cdc FROM sys.tables WHERE name='table_name'
 ```
 
+### 5. 批量开启表级的cdc
+
+```
+USE YourDatabaseName;
+GO
+
+DECLARE @tableName NVARCHAR(255);
+DECLARE tableCursor CURSOR FOR
+    SELECT name
+    FROM sys.tables
+    WHERE name IN ('Table1', 'Table2', 'Table3'); -- 在这里列出你想要启用 CDC 的表名
+
+OPEN tableCursor;
+FETCH NEXT FROM tableCursor INTO @tableName;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    EXEC sys.sp_cdc_enable_table  
+        @source_schema = N'dbo',  
+        @source_name   = @tableName,  
+        @capture_instance = NULL, -- capture_instance
+        @supports_net_changes = 1, -- supports_net_changes
+        @role_name = NULL, -- role_name
+        @index_name = NULL, -- index_name
+        @captured_column_list = NULL, -- captured_column_list
+        @filegroup_name = 'CDC' -- filegroup_name
+
+    FETCH NEXT FROM tableCursor INTO @tableName;
+END
+
+CLOSE tableCursor;
+DEALLOCATE tableCursor;
+GO
+```
+
 ## 容器化安装Apache Kafka
 
 1. 准备数据目录
@@ -269,3 +304,12 @@ bin/schema-registry-start etc/schema-registry/schema-registry.properties
 <https://docs.confluent.io/platform/current/platform-quickstart.html>
 
 ## connector实例执行数据同步
+
+
+
+### 问题记录：
+
+#### 出发cdc
+```
+update t_pf_out_master set update_time=DATEADD(SECOND, 1, update_time) where sheet_no='SO2402230022'; 
+```
